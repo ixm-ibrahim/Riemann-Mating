@@ -15,6 +15,8 @@ Controls:
   O, U: zoom in and out on the projected complex plane
    
   Left, Right, Down Arrow Keys: decrease, increase, or stop changing the mating frame (NOTE: this only can be done after all the frames have been generated)
+  
+  F11: toggle fullscreen
 
 
 PROBLEMS:
