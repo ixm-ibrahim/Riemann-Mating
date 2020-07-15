@@ -1,0 +1,24 @@
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK Reimann Mandlebrot.exe.config
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK Reimann Mandlebrot.exe
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK Reimann Mandlebrot.pdb
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK.dll
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\SharpAvi.dll
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK.pdb
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK.xml
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\bin\Debug\SharpAvi.xml
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mating.csprojAssemblyReference.cache
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mating.csproj.CopyComplete
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.exe
+C:\Users\ixmib\source\repos\OpenTK Reimann Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.pdb
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK Reimann Mandlebrot.exe.config
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK Reimann Mandlebrot.exe
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK Reimann Mandlebrot.pdb
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK.dll
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\SharpAvi.dll
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK.pdb
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\OpenTK.xml
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\bin\Debug\SharpAvi.xml
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mating.csprojAssemblyReference.cache
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mating.csproj.CopyComplete
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.exe
+C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.pdb
