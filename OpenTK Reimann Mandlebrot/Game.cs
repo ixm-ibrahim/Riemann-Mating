@@ -9,7 +9,7 @@ namespace OpenTK_Reimann_Mating
 {
     /* Problems:
      *      1. The closer 's' is to zero, the more infinite-points (represented as blue) there are - which obscures the outer 'q' Julia Set
-     *          Note: the blue represtation can be commented out in shader.frag, but this will only replace the blue with some other color - causing the same problems with the rendering
+     *          Note: the blue represtation can be commented out in shader.frag, but this will only replace the blue with some other color - causing the same problem with the rendering
      *      2. When s is zero, the entire sphere is somehow colored as if it's the outer 'q' Julia Set
      *      3. When the last n is being displayed (going through all the s for that n), the fractals have slightly different shapes - it's not a smooth transition, even if problems 1 and 2 were not there
      *          Note: this can be easily seen if the projection is zoomed in, so that q mates into p on the north pole (rather than the original p mating with q on the south pole)
@@ -25,7 +25,9 @@ namespace OpenTK_Reimann_Mating
      *      IJKL: movement along the projected complex plane (initially, the origin is centered at the south pole)
      *      O, U: zoom in and out on the projected complex plane
      *      
-     *      Left, Right, Down Arrow Keys: decrease, increase, or stop changing the mating frame (only can be done after all the frames have been generated)
+     *      Left, Right, Down Arrow Keys: decrease, increase, or stop changing the mating frame (NOTE: this only can be done after all the frames have been generated)
+     *      
+     *      F11: toggle fullscreen
      */
 
 
@@ -67,10 +69,10 @@ namespace OpenTK_Reimann_Mating
             frame = -1;
 
             t = new double[intermediateSteps];
-            R_t = new double[intermediateSteps];
+            R = new double[intermediateSteps];
 
-            x_t = new Complex[matingIterations * intermediateSteps];
-            y_t = new Complex[matingIterations * intermediateSteps];
+            x = new Complex[matingIterations * intermediateSteps];
+            y = new Complex[matingIterations * intermediateSteps];
 
             ma = new Vector2[matingIterations * intermediateSteps];
             mb = new Vector2[matingIterations * intermediateSteps];
@@ -82,7 +84,7 @@ namespace OpenTK_Reimann_Mating
             for (int s = 0; s < intermediateSteps; s++)
             {
                 t[s] = (s + .5) / intermediateSteps;
-                R_t[s] = Math.Exp(Math.Pow(2, 1 - t[s]) * Math.Log(R1));
+                R[s] = Math.Exp(Math.Pow(2, 1 - t[s]) * Math.Log(R1));
 
                 // only used for speeding up calculations for the x_t and y_t arrays
                 tmp[s] = (1 + ((1 - t[s]) * q / R2)) / (1 + ((1 - t[s]) * p / R2));
@@ -94,10 +96,13 @@ namespace OpenTK_Reimann_Mating
             for (int i = 0; i < matingIterations * intermediateSteps; i++)
             {
                 int s = i % intermediateSteps;
+                /*
+                x[i] = Complex.Proj(tmp[s] * (p_i / R[s]) / (1 + ((1 - t[s]) * q / R4 * (p_i - p))));
+                y[i] = Complex.Proj(tmp[s] * (R[s] / q_i) * (1 + ((1 - t[s]) * p / R4 * (q_i - q))));
+                */
 
-                x_t[i] = Complex.Proj(tmp[s] * (p_i / R_t[s]) / (1 + ((1 - t[s]) * q / R4 * (p_i - p))));
-                y_t[i] = Complex.Proj(tmp[s] * (R_t[s] / q_i) * (1 + ((1 - t[s]) * p / R4 * (q_i - q))));
-
+                x[i] = p_i / R[s];
+                y[i] = R[s] / q_i;
 
                 if (s == intermediateSteps - 1)
                 {
@@ -114,9 +119,9 @@ namespace OpenTK_Reimann_Mating
             else
             {
                 if (zoomMode == 1)
-                    frame += (float)e.Time * intermediateSteps;
+                    frame += (float)e.Time * intermediateSteps / 2;
                 else if (zoomMode == -1)
-                    frame -= (float)e.Time * intermediateSteps;
+                    frame -= (float)e.Time * intermediateSteps / 2;
 
                 if (frame < 0)
                     frame = 0;
@@ -146,7 +151,7 @@ namespace OpenTK_Reimann_Mating
                     var z_x = new Complex[matingIterations - n];
                     var z_y = new Complex[matingIterations - n];
 
-                    var tmp2 = (1 - y_t[first]) / (1 - x_t[first]);
+                    var tmp2 = (1 - y[first]) / (1 - x[first]);
 
                     for (int k = 0; k < matingIterations - n; k++)
                     {
@@ -154,28 +159,28 @@ namespace OpenTK_Reimann_Mating
                         int next = intermediateSteps * k_next + s;
                         int prev = intermediateSteps * k + ((s + intermediateSteps - 1) % intermediateSteps);
 
-                        z_x[k] = Complex.Sqrt(Complex.Proj(tmp2 * (x_t[next] - x_t[first]) / (x_t[next] - y_t[first])));
-                        z_y[k] = Complex.Sqrt(Complex.Proj(tmp2 * (1 - (x_t[first] / y_t[next])) / (1 - (y_t[first] / y_t[next]))));
+                        z_x[k] = Complex.Sqrt(Complex.Proj(tmp2 * (x[next] - x[first]) / (x[next] - y[first])));
+                        z_y[k] = Complex.Sqrt(Complex.Proj(tmp2 * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
 
                         //Console.WriteLine(k + " (" + n + ")\n\t" + z_y[k] + "\n");
                         /**/
-                        if ((-z_x[k] - x_t[prev]).RadiusSquared < (z_x[k] - x_t[prev]).RadiusSquared)
+                        if ((-z_x[k] - x[prev]).RadiusSquared < (z_x[k] - x[prev]).RadiusSquared)
                             z_x[k] = -z_x[k];
-                        if ((-z_y[k] - y_t[prev]).RadiusSquared < (z_y[k] - y_t[prev]).RadiusSquared)
+                        if ((-z_y[k] - y[prev]).RadiusSquared < (z_y[k] - y[prev]).RadiusSquared)
                             z_y[k] = -z_y[k];
                     }
 
                     for (int k = 0; k < matingIterations - n; k++)
                     {
-                        x_t[intermediateSteps * k + s] = z_x[k];
-                        y_t[intermediateSteps * k + s] = z_y[k];
+                        x[intermediateSteps * k + s] = z_x[k];
+                        y[intermediateSteps * k + s] = z_y[k];
                     }
                 }
 
-                var d = y_t[first] - 1;
-                var c = 1 - x_t[first];
-                var b = x_t[first] * d;
-                var a = y_t[first] * c;
+                var d = y[first] - 1;
+                var c = 1 - x[first];
+                var b = x[first] * d;
+                var a = y[first] * c;
 
                 ma[(int)frame] = new Vector2((float)a.R, (float)a.I);
                 mb[(int)frame] = new Vector2((float)b.R, (float)b.I);
@@ -259,7 +264,7 @@ namespace OpenTK_Reimann_Mating
             shader.SetFloat("bailout", (float) bailout);
             shader.SetVector2("p", new Vector2((float) p.R, (float) p.I));
             shader.SetVector2("q", new Vector2((float) q.R, (float) q.I));
-            shader.SetFloat("R_t", (float) R_t[s]);
+            shader.SetFloat("R_t", (float) R[s]);
             shader.SetInt("currentMatingIteration", n);
             
             shader.SetFloat("time", (float) time);
@@ -344,11 +349,11 @@ namespace OpenTK_Reimann_Mating
 
         // intermediate_steps
         double[] t = new double[16];
-        double[] R_t = new double[16];
+        double[] R = new double[16];
 
         // matingIterations * intermediateSteps
-        Complex[] x_t;
-        Complex[] y_t;
+        Complex[] x;
+        Complex[] y;
 
         // matingIterations * intermediateSteps
         Vector2[] ma;
