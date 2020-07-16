@@ -414,17 +414,15 @@ vec3 JuliaMatingLoop(dvec2 z)
     }
     else
     {
-        /*
-        int newMax = iter + 3;
-
-        // Smooth iteration
-        for (iter = iter; iter < newMax; iter++)
-            w = c_2(w) + c;
-        
         float mu = iter + 1 - (log2(log2(length(w))));
+
         float t = time * -5;
-        vec3 color = vec3(sin(7 * (mu+t/2) / 17), sin(11 * (mu+t/3) / 29), sin(13 * (mu+t/5) / 41));
-        */
+
+        vec3 muColor = vec3(sin(7 * (mu+t/2) / 17), sin(11 * (mu+t/3) / 29), sin(13 * (mu+t/5) / 41));
+        
+        //color = vec3(1);
+        //color = muColor;
+        color = 1 - muColor;
     }
 
     return color;
