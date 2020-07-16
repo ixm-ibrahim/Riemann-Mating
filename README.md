@@ -21,9 +21,11 @@ Controls:
 
 PROBLEMS:
   1. The closer 's' is to zero, the more infinite-points (represented as blue) there are - which obscures the outer 'q' Julia Set
+  
      Note: the blue represtation can be commented out in shader.frag, but this will only replace the blue with some other color - causing the same problem with the rendering
   2. When 's' is zero, the entire sphere is somehow colored as if it's the outer 'q' Julia Set
   3. When the last 'n' is being displayed (going through all the 's' for that 'n'), the fractals have slightly different shapes - it would not be a smooth transition, even if problems 1 and 2 were not there
+  
      Note: this can be easily seen if the projection is zoomed in, so that 'q' mates into 'p' on the north pole (rather than the original 'p' mating with 'q' on the south pole)
 
 
