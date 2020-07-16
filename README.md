@@ -6,17 +6,26 @@ To change the values of the slow mating, simply go into Game.cs and adjust the d
 
 Controls:
   WASD, Space, L-Shift: camera movement
+  
   Mouse: rotate camera in space
+  
   Scroll: zoom
+  
   N: toggle lock camera to center of the world (so that it appears that the sphere itself is rotating rather than the camera)
+  
   B: change camera type from FPS to FREE or vice versa
+  
      
   IJKL: movement along the projected complex plane (initially, the origin is centered at the south pole)
+  
   O, U: zoom in and out on the projected complex plane
+  
    
   Left, Right, Down Arrow Keys: decrease, increase, or stop changing the mating frame (NOTE: this only can be done after all the frames have been generated)
   
+  
   F11: toggle fullscreen
+  
 
 
 PROBLEMS:
