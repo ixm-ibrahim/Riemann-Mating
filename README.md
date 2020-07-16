@@ -4,7 +4,7 @@ Algorithm largely taken from https://code.mathr.co.uk/mating: see https://math.s
 
 To change the values of the slow mating, simply go into Game.cs and adjust the desired value, and then build and run the project.
 
-Controls:
+*CONTROLS:*
 
   **WASD, Space, L-Shift**: camera movement
   **Mouse**: rotate camera in space
@@ -20,7 +20,7 @@ Controls:
   **F11**: toggle fullscreen
 
 
-PROBLEMS:
+*PROBLEMS:*
   1. The closer 's' is to zero, the more infinite-points (represented as blue) there are - which obscures the outer 'q' Julia Set
   
      Note: the blue represtation can be commented out in shader.frag, but this will only replace the blue with some other color - causing the same problem with the rendering
