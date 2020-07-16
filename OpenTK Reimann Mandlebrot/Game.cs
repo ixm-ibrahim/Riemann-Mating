@@ -36,10 +36,7 @@ namespace OpenTK_Reimann_Mating
 
         // Julia Sets to mate
         Complex p = new Complex(-1, 0);
-        //Complex p = new Complex(-.123f, .745f);
-        //Complex q = new Complex(0, 1);
-        Complex q = new Complex(0, 1);
-        //Complex q = new Complex(-.123f, .745f);
+        Complex q = new Complex(-.123f, .745f);
 
         // Mating values
         int maxIterations = 100;        // Increasing this will increase lag
