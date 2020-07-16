@@ -19,6 +19,7 @@ To change the values of the slow mating, simply go into Game.cs and adjust the d
   
   **F11**: toggle fullscreen
 
+ 
 
 ***PROBLEMS:***
   1. The closer 's' is to zero, the more infinite-points (represented as blue) there are - which obscures the outer 'q' Julia Set
