@@ -210,6 +210,13 @@ namespace OpenTK_Reimann_Mating
             GL.Uniform1(uniformLocations[name], data);
         }
 
+        // Set a uniform double on the shader
+        public void SetDouble(string name, double data)
+        {
+            GL.UseProgram(Handle);
+            GL.Uniform1(uniformLocations[name], data);
+        }
+
         // Set a uniform Vector2 on the shader
         public void SetVector2(string name, Vector2 data)
         {

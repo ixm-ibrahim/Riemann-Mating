@@ -41,10 +41,10 @@ namespace OpenTK_Reimann_Mating
         Complex q = new Complex(-.123f, .745f);
 
         // Mating values
-        int maxIterations = 300;
+        int maxIterations = 100;
         double bailout = 100;
-        int matingIterations = 10;      // Currently cannot exceed 25, or there will be problems with the shader
-        int intermediateSteps = 100;
+        int matingIterations = 20;      // Currently cannot exceed 25, or there will be problems with the shader
+        int intermediateSteps = 20;
 
         // The higher, the more zoomed in on the Riemann Sphere
         float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
@@ -56,8 +56,8 @@ namespace OpenTK_Reimann_Mating
         float i = 0;
 
         const double R1 = 1e10;
-        const double R2 = 1e20;
-        const double R4 = 1e40;
+        //const double R2 = 1e20;
+        //const double R4 = 1e40;
 
 
         // MATING CODE
@@ -79,7 +79,7 @@ namespace OpenTK_Reimann_Mating
             mc = new Vector2[matingIterations * intermediateSteps];
             md = new Vector2[matingIterations * intermediateSteps];
 
-            var tmp = new Complex[intermediateSteps];
+            //var tmp = new Complex[intermediateSteps];
 
             for (int s = 0; s < intermediateSteps; s++)
             {
@@ -87,7 +87,7 @@ namespace OpenTK_Reimann_Mating
                 R[s] = Math.Exp(Math.Pow(2, 1 - t[s]) * Math.Log(R1));
 
                 // only used for speeding up calculations for the x_t and y_t arrays
-                tmp[s] = (1 + ((1 - t[s]) * q / R2)) / (1 + ((1 - t[s]) * p / R2));
+                //tmp[s] = (1 + ((1 - t[s]) * q / R2)) / (1 + ((1 - t[s]) * p / R2));
             }
 
             var p_i = Complex.Zero;
@@ -256,15 +256,28 @@ namespace OpenTK_Reimann_Mating
 
             Console.WriteLine("frame: " + frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
 
-
-
+            // This deals with the 2 frames where the shader's float precision is too little
+            if (completed && s < 2)
+            {
+                if (zoomMode == 1)
+                {
+                    frame += 2 - s;
+                    s = 2;
+                }
+                else if (zoomMode == -1)
+                {
+                    frame -= s + 1;
+                    s = intermediateSteps - 1;
+                    n--;
+                }
+            }
 
 
             shader.SetInt("maxIterations", maxIterations);
             shader.SetFloat("bailout", (float) bailout);
             shader.SetVector2("p", new Vector2((float) p.R, (float) p.I));
             shader.SetVector2("q", new Vector2((float) q.R, (float) q.I));
-            shader.SetFloat("R_t", (float) R[s]);
+            shader.SetDouble("R_t", (float) R[s]);
             shader.SetInt("currentMatingIteration", n);
             
             shader.SetFloat("time", (float) time);
@@ -283,7 +296,18 @@ namespace OpenTK_Reimann_Mating
                 mb_frame[k] = mb[intermediateSteps * k + s];
                 mc_frame[k] = mc[intermediateSteps * k + s];
                 md_frame[k] = md[intermediateSteps * k + s];
+                /*
+                if (!completed)
+                {
+                    Console.WriteLine("k: " + k);
+                    Console.WriteLine("\tma: " + ma_frame[k]);
+                    Console.WriteLine("\tmb: " + mb_frame[k]);
+                    Console.WriteLine("\tmc: " + mc_frame[k]);
+                    Console.WriteLine("\tmd: " + md_frame[k]);
+                    Console.WriteLine();
+                }*/
             }
+
 
             shader.SetVector2Array("ma", ma_frame);
             shader.SetVector2Array("mb", mb_frame);

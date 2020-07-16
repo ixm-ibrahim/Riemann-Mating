@@ -125,7 +125,7 @@ uniform int intermediateSteps;
 uniform int currentMatingIteration;
 uniform vec2 p;
 uniform vec2 q;
-uniform float R_t;
+uniform double R_t;
 
 
 uniform float zoom;
@@ -247,6 +247,53 @@ void main()
     FragColor = vec4(Riemann(), 1.0);
 }
 
+dvec2 dc_conj(dvec2 c)
+{
+    return dvec2(c.x, -c.y);
+}
+
+dvec2 dc_2(dvec2 c)
+{
+    return vec2(c.x*c.x - c.y*c.y, 2*c.x*c.y);
+}
+
+dvec2 dc_mult(dvec2 a, dvec2 b)
+{
+    return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
+}
+
+double dc_conj_mult(dvec2 c)
+{
+    return dc_mult(c, dc_conj(c)).x;
+}
+
+dvec2 dc_div(dvec2 a, dvec2 b)
+{/*
+    return c_mult(a, c_conj(b)) / c_conj_mult(b);
+    */
+	double x = b.x * b.x + b.y * b.y;
+	return vec2((a.x * b.x + a.y * b.y) / x, (b.x * a.y - a.x * b.y) / x);
+    
+}
+
+dvec2 dc_sqrt(dvec2 c)
+{
+    double r = length(c);
+    double a = 1/sqrt(2);
+    
+    //return vec2(a * sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
+    return .5 * sqrt(2) * vec2(sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
+}
+
+dvec2 dcproj(dvec2 c)
+{
+    if (!isinf(c.x) && !isinf(c.y) && !isnan(c.x) && !isnan(c.y))
+        return c;
+        
+    return vec2(infinity, 0);
+    //return vec2(infinity, sign(c.y) * 1e-10);
+}
+
 vec2 c_conj(vec2 c)
 {
     return vec2(c.x, -c.y);
@@ -268,12 +315,12 @@ float c_conj_mult(vec2 c)
 }
 
 vec2 c_div(vec2 a, vec2 b)
-{
+{/*
     return c_mult(a, c_conj(b)) / c_conj_mult(b);
-    /*
-	float x = b.x * b.x + b.y * b.y;
-	return vec2((a.x * b.x + a.y * b.y) / x, (b.x * a.y - a.x * b.y) / x);
     */
+	double x = b.x * b.x + b.y * b.y;
+	return vec2((a.x * b.x + a.y * b.y) / x, (b.x * a.y - a.x * b.y) / x);
+    
 }
 
 vec2 c_sqrt(vec2 c)
@@ -290,7 +337,8 @@ vec2 cproj(vec2 c)
     if (!isinf(c.x) && !isinf(c.y) && !isnan(c.x) && !isnan(c.y))
         return c;
         
-    return vec2(infinity, sign(c.y) * 1e-10);
+    return vec2(infinity, 0);
+    //return vec2(infinity, sign(c.y) * 1e-10);
 }
 
 vec3 ColorFromHSV(vec3 color)
@@ -318,7 +366,7 @@ vec3 ColorFromHSV(vec3 color)
     return vec3(v, p, q);
 }
 
-vec3 JuliaMatingLoop(vec2 z)
+vec3 JuliaMatingLoop(dvec2 z)
 {
     // julia
     vec2 c;
@@ -330,14 +378,8 @@ vec3 JuliaMatingLoop(vec2 z)
     // orbit push forward
     for (int k = currentMatingIteration; k >= 0; --k)
     {
-        if (isinf(z.x) || isinf(z.y))
-	    {
-            //return vec3(1,0,0);   // Enable this to see where z becomes infinity (color in red) - my cproj function should successfully handle these instances, but I don't know how to confirm
-	    }
-        
-
-        z = cproj(c_2(z));
-        z = cproj(c_div(c_mult(ma[k], z) + mb[k], c_mult(mc[k], z) + md[k]));
+        z = dcproj(dc_2(z));
+        z = dcproj(dc_div(dc_mult(ma[k], z) + mb[k], dc_mult(mc[k], z) + md[k]));
     }
 
     // Decide which hemisphere we're in
@@ -345,23 +387,17 @@ vec3 JuliaMatingLoop(vec2 z)
     {
         color = vec3(.8);    // light gray
         c = p;
-        w = R_t * z;
-        
-        if (isinf(w.x) || isinf(w.y))
-	    {
-		    //return vec3(0,1,0);   // Enable this to see where w becomes infinity (color in green) - this should never occur
-	    }
+        w = vec2(R_t * z);
     }
     else
     {
         color = vec3(.2);    // dark grey
         c = q;
-        w = cproj(c_div(vec2(R_t,0), z));   // complex division - is this causing the problem?
-    
-        if (isinf(w.x) || isinf(w.y))
-	    {
-		    return vec3(0,0,1);   // Enable this to see where w becomes infinity (color in blue) - I'm 99% sure this is where the main problem is
-	    }
+        
+        if (abs(z.y) < 1e-7)    // reduces error
+            w = vec2(R_t / z.x, 0);
+        else
+            w = vec2(dcproj(dc_div(dvec2(R_t,0), z)));
     }
 
 
@@ -390,28 +426,6 @@ vec3 JuliaMatingLoop(vec2 z)
         vec3 color = vec3(sin(7 * (mu+t/2) / 17), sin(11 * (mu+t/3) / 29), sin(13 * (mu+t/5) / 41));
         */
     }
-    
-
-    /*
-    //  I didn't like these colors
-
-    vec2 c0 = (vec2(1,0) - c_sqrt(vec2(1,0) - 4*c)) / 2;
-
-    if (length(w) > bailout)
-    {
-        //float de = length(w) * log(length(w));
-		//color = mix(1 - color, vec3(.5), tanh(de));
-		//color = mix(1 - color, vec3(.5), .5*sin(length(w)+.5));
-        //color = 1 - color;
-    }
-    else
-    {
-	    //vec3 hsv = vec3((length(w - c0) / PI + 1) / 2, 1, 1 );
-	    //color = mix(color, ColorFromHSV(hsv), 0.5);
-	    //color = color;
-        //color = mix(1 - pow(normalize(FragPosModel), vec3(.9)), vec3(sin(1 * time / 11), sin(2 * time / 13), sin(3 * time / 17)), .3);
-    }
-    */
 
     return color;
 }
