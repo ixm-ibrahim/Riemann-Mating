@@ -210,11 +210,6 @@ namespace OpenTK_Reimann_Mating
             var c = new Vector3(-s, -s, 0);   // 2
             var d = new Vector3(s, -s, 0);    // 3
 
-            Console.WriteLine(a);
-            Console.WriteLine(b);
-            Console.WriteLine(c);
-            Console.WriteLine(d);
-
             var faces = new List<QuadFace>
             {
                 new QuadFace(a, b, c, d)

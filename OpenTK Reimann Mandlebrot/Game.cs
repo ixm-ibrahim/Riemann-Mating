@@ -39,10 +39,10 @@ namespace OpenTK_Reimann_Mating
         Complex q = new Complex(-.123f, .745f);
 
         // Mating values
-        int maxIterations = 100;
+        int maxIterations = 100;        // Increasing this will increase lag
         double bailout = 100;
         int matingIterations = 20;      // Currently cannot exceed 25, or there will be problems with the shader
-        int intermediateSteps = 20;
+        int intermediateSteps = 100;
 
         // The higher, the more zoomed in on the Riemann Sphere
         float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
@@ -64,6 +64,7 @@ namespace OpenTK_Reimann_Mating
         // Note: these two need to be called in OnLoad()
         void InitializeMating()
         {
+            completed = false;
             frame = -1;
 
             t = new double[intermediateSteps];
@@ -117,9 +118,9 @@ namespace OpenTK_Reimann_Mating
             else
             {
                 if (zoomMode == 1)
-                    frame += (float)e.Time * intermediateSteps / 2;
+                    frame += (float)e.Time * intermediateSteps;
                 else if (zoomMode == -1)
-                    frame -= (float)e.Time * intermediateSteps / 2;
+                    frame -= (float)e.Time * intermediateSteps;
 
                 if (frame < 0)
                     frame = 0;
@@ -252,15 +253,17 @@ namespace OpenTK_Reimann_Mating
             int s = (int) frame % intermediateSteps;
             int n = ((int) frame - s) / intermediateSteps;
 
-            Console.WriteLine("frame: " + frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
+            //Console.WriteLine("frame: " + frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
 
-            // This deals with the 2 frames where the shader's float precision is too little
-            if (completed && s < 2)
+            // This deals with the f frames where the shader's float precision is not enough
+            //int f = 2;
+            int f = intermediateSteps / 10;
+            if (completed && s < f)
             {
                 if (zoomMode == 1)
                 {
-                    frame += 2 - s;
-                    s = 2;
+                    frame += f - s;
+                    s = f;
                 }
                 else if (zoomMode == -1)
                 {
@@ -294,16 +297,6 @@ namespace OpenTK_Reimann_Mating
                 mb_frame[k] = mb[intermediateSteps * k + s];
                 mc_frame[k] = mc[intermediateSteps * k + s];
                 md_frame[k] = md[intermediateSteps * k + s];
-                /*
-                if (!completed)
-                {
-                    Console.WriteLine("k: " + k);
-                    Console.WriteLine("\tma: " + ma_frame[k]);
-                    Console.WriteLine("\tmb: " + mb_frame[k]);
-                    Console.WriteLine("\tmc: " + mc_frame[k]);
-                    Console.WriteLine("\tmd: " + md_frame[k]);
-                    Console.WriteLine();
-                }*/
             }
 
 
