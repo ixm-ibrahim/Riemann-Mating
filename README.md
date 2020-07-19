@@ -2,7 +2,7 @@
 
 This project attempts to show the slow mating of two Mandelbrot Julia Sets in real time, based on "The Thurston Algorithm for quadratic matings" (https://arxiv.org/pdf/1706.04177v1.pdf) by Wolf Jung.
 
-The algorithm used is largely taken from https://code.mathr.co.uk/mating: see this question for a more in depth explanation of the algorithm: https://math.stackexchange.com/questions/3747790/struggling-to-understand-polynomial-matings-with-julia-sets
+The algorithm used is largely taken from https://code.mathr.co.uk/mating: see this question for a more detailed explanation of the algorithm I'm using: https://math.stackexchange.com/questions/3747790/struggling-to-understand-polynomial-matings-with-julia-sets
 
 
 To change the values of the slow mating, simply go into Game.cs and adjust the desired value, and then build and run the project in Visual Studio.
