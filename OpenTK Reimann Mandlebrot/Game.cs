@@ -7,13 +7,7 @@ using System.Drawing;
 
 namespace OpenTK_Reimann_Mating
 {
-    /* Problems:
-     *      1. The closer 's' is to zero, the more infinite-points there are - which obscures the outer 'q' Julia Set.
-     *      2. When 's' is zero, almost the entirety of the outer 'q' Julia Set is obscured by infinite-points.
-     *      
-     *      Both of these problems are caused by limited GLSL floating-point precision, and can be solved if the push-forward code (in the fragment shader) uses doubles instead of floats. However, this slows down the rendering considerably, and so the ideal would be using floats.
-     * 
-     * Controls:
+    /* Controls:
      *      WASD, Space, L-Shift: camera movement
      *      Mouse: rotate camera in space
      *      Scroll: zoom
@@ -35,24 +29,28 @@ namespace OpenTK_Reimann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        Complex p = new Complex(-1, 0);
-        Complex q = new Complex(-.123f, .745f);
+        Complex p = new Complex(-1, 0);         // basillica
+        Complex q = new Complex(-.123f, .745f); // rabbit
 
         // Mating values
         int maxIterations = 100;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 20;      // Currently cannot exceed 25, or there will be problems with the shader
+        int matingIterations = 25;      // Currently cannot exceed 25, or there will be problems with the shader
         int intermediateSteps = 100;    // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
-        float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
-        //float zoom = 0f;    // normal Riemann Sphere zoom
+        //float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
+        float zoom = 0f;    // normal Riemann Sphere zoom
         //float zoom = 4f;    // viewing as if the complex plane is flat, with q mating into p (viewed from the north pole)
 
-        // Starting position on the complex plane (centered at south pole of Riemann Sphere)
+        // Starting position on the complex plane (centered at zero on the south pole of Riemann Sphere)
         float r = 0;
         float i = 0;
 
+        // Set this to "true" if you want the camera to start by facing the south pole (best paired with the zoom = 4 option above)
+        bool southPole = false;
+
+        // This can be changed, but this holds the best results
         const double R1 = 1e10;
         //const double R2 = 1e20;
         //const double R4 = 1e40;
@@ -118,9 +116,9 @@ namespace OpenTK_Reimann_Mating
             else
             {
                 if (zoomMode == 1)
-                    frame += (float)e.Time * intermediateSteps;
+                    frame += (float)e.Time * intermediateSteps/5;
                 else if (zoomMode == -1)
-                    frame -= (float)e.Time * intermediateSteps;
+                    frame -= (float)e.Time * intermediateSteps/5;
 
                 if (frame < 0)
                     frame = 0;
@@ -253,26 +251,8 @@ namespace OpenTK_Reimann_Mating
             int s = (int) frame % intermediateSteps;
             int n = ((int) frame - s) / intermediateSteps;
 
-            //Console.WriteLine("frame: " + frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
-
-            // This deals with the f frames where the shader's float precision is not enough
-            //int f = 2;
-            int f = intermediateSteps / 10;
-            if (completed && s < f)
-            {
-                if (zoomMode == 1)
-                {
-                    frame += f - s;
-                    s = f;
-                }
-                else if (zoomMode == -1)
-                {
-                    frame -= s + 1;
-                    s = intermediateSteps - 1;
-                    n--;
-                }
-            }
-
+            // Comment this out to remove console updatess
+            Console.WriteLine("frame: " + (int)frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
 
             shader.SetInt("maxIterations", maxIterations);
             shader.SetFloat("bailout", (float) bailout);
@@ -390,7 +370,8 @@ namespace OpenTK_Reimann_Mating
             camera.target = target;
 
             // start by facing the south pole
-            camera.ArcBallPitch(45, Camera.Type.FREE, false, true);
+            if (southPole)
+                camera.ArcBallPitch(45, Camera.Type.FREE, false, true);
         }
 
         //@Fix error where, if you move the mouse fast enough, the cursor leaves the screen

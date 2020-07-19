@@ -1,5 +1,6 @@
 ﻿#version 450 core
 
+#define MAX_FLOAT 3.402823466e+18
 #define PI 3.1415926535897932384626433832795
 #define MAX_MATING_ITER 25
 
@@ -268,12 +269,12 @@ double dc_conj_mult(dvec2 c)
 }
 
 dvec2 dc_div(dvec2 a, dvec2 b)
-{/*
-    return c_mult(a, c_conj(b)) / c_conj_mult(b);
-    */
+{
+    return dc_mult(a, dc_conj(b)) / dc_conj_mult(b);
+    /*
 	double x = b.x * b.x + b.y * b.y;
 	return vec2((a.x * b.x + a.y * b.y) / x, (b.x * a.y - a.x * b.y) / x);
-    
+    */
 }
 
 dvec2 dc_sqrt(dvec2 c)
@@ -383,7 +384,7 @@ vec3 JuliaMatingLoop(dvec2 z)
     }
 
     // Decide which hemisphere we're in
-    if (length(z) < 1)
+    if (length(z) <= 1)
     {
         color = vec3(.8);    // light gray
         c = p;
@@ -397,7 +398,8 @@ vec3 JuliaMatingLoop(dvec2 z)
         if (abs(z.y) < 1e-7)    // reduces error
             w = vec2(R_t / z.x, 0);
         else
-            w = vec2(dcproj(dc_div(dvec2(R_t,0), z)));
+            w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
+            //w = vec2(dcproj(dc_div(dvec2(R_t,0), z)));
     }
 
 
@@ -414,7 +416,17 @@ vec3 JuliaMatingLoop(dvec2 z)
     }
     else
     {
-        float mu = iter + 1 - (log2(log2(length(w))));
+        int newIter = iter;
+        for (newIter = iter; newIter < (iter + 3) && (w.x * w.x + w.y * w.y < bailout); newIter++)
+            w = c_2(w) + c;
+        
+        float mu;
+
+        if (isinf(length(w)))
+            mu = iter + 1 - log2(log2(MAX_FLOAT));
+            //mu = 0;
+        else
+            mu = iter + 1 - log2(log2(length(w)));
 
         float t = time * -5;
 
@@ -423,6 +435,7 @@ vec3 JuliaMatingLoop(dvec2 z)
         //color = vec3(1);
         //color = muColor;
         color = 1 - muColor;
+        
     }
 
     return color;

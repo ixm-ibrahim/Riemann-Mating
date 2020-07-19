@@ -21,13 +21,3 @@ To change the values of the slow mating, simply go into Game.cs and adjust the d
   **Left, Right, Down Arrow Keys**: decrease, increase, or stop changing the mating frame (NOTE: this only can be done after all the frames have been generated)
   
   **F11**: toggle fullscreen
-
- 
-
-***PROBLEMS:***
-  1. The closer 's' is to zero, the more infinite-points there are - which obscures the outer 'q' Julia Set.
-  
-  2. When 's' is zero, almost the entirety of the outer 'q' Julia Set is obscured by infinite-points.
-
-
-Both of these problems are caused by limited GLSL floating-point precision, and can be solved if the push-forward code (in the fragment shader) uses doubles instead of floats. However, this slows down the rendering considerably, and so the ideal would be using floats.
