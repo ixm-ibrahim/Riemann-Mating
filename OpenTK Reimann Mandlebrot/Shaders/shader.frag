@@ -254,12 +254,12 @@ dvec2 dc_conj(dvec2 c)
 
 dvec2 dc_2(dvec2 c)
 {
-    return vec2(c.x*c.x - c.y*c.y, 2*c.x*c.y);
+    return dvec2(c.x*c.x - c.y*c.y, 2*c.x*c.y);
 }
 
 dvec2 dc_mult(dvec2 a, dvec2 b)
 {
-    return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
+    return dvec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
 }
 
 double dc_conj_mult(dvec2 c)
@@ -281,8 +281,8 @@ dvec2 dc_sqrt(dvec2 c)
     double r = length(c);
     double a = 1/sqrt(2);
     
-    //return vec2(a * sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
-    return .5 * sqrt(2) * vec2(sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
+    //return dvec2(a * sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
+    return .5 * sqrt(2) * dvec2(sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
 }
 
 dvec2 dcproj(dvec2 c)
@@ -290,7 +290,7 @@ dvec2 dcproj(dvec2 c)
     if (!isinf(c.x) && !isinf(c.y) && !isnan(c.x) && !isnan(c.y))
         return c;
         
-    return vec2(infinity, 0);
+    return dvec2(infinity, 0);
     //return vec2(infinity, sign(c.y) * 1e-10);
 }
 
