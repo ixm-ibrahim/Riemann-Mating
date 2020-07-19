@@ -152,7 +152,7 @@ namespace OpenTK_Reimann_Mating
 		// Gets the view matrix
 		public Matrix4 GetViewMatrix()
 		{
-			return Matrix4.LookAt(Position, Position + direction, up);
+			return Matrix4.LookAt(Position, direction, up);
 		}
 
 		// Gets the projection matrix

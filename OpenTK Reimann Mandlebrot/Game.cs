@@ -50,6 +50,9 @@ namespace OpenTK_Reimann_Mating
         // Set this to "true" if you want the camera to start by facing the south pole (best paired with the zoom = 4 option above)
         bool southPole = false;
 
+        //float cameraStartDist = 11.5f;  // Looking at a small part of it (best paired with zoom = 4 option above)
+        float cameraStartDist = 23.5f;  // Looking at the entire sphere (best paired with zoom = 0 option above)
+
         // This can be changed, but this holds the best results
         const double R1 = 1e10;
         //const double R2 = 1e20;
@@ -331,8 +334,6 @@ namespace OpenTK_Reimann_Mating
 
         float sideLength = 10f;
         float scale = 0f;
-        Vector3 start = new Vector3(0, 0, 17.01f);
-        Vector3 target = new Vector3(0, 0, 10.1f);
 
         // Handles to OpenGL objects
         int VertexBufferObject;
@@ -366,8 +367,8 @@ namespace OpenTK_Reimann_Mating
         {
             camera = new Camera(Vector3.UnitZ * 3, Width / (float)Height);
 
-            camera.Position = start;
-            camera.target = target;
+            camera.Position = new Vector3(0, 0, cameraStartDist);
+            camera.target = new Vector3(0, 0, 10.1f);
 
             // start by facing the south pole
             if (southPole)
