@@ -24,5 +24,6 @@ To change the values of the slow mating, simply go into Game.cs and adjust the d
   
 
 .
+
 **PROBLEMS:**
   1. When the last 'n' is being displayed (going through all the 's' for "mating_iterations - 1"), the fractals have slightly different shapes - unsure of what's causing this problem	
