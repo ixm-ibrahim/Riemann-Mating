@@ -29,14 +29,16 @@ namespace OpenTK_Reimann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        Complex p = new Complex(-1, 0);         // basillica
-        Complex q = new Complex(-.123f, .745f); // rabbit
+        Complex p = new Complex(-1, 0);             // basillica
+        Complex q = new Complex(-.123f, .745f);     // rabbit
+        //Complex p = new Complex(-.835f, -.2321f);
+        //Complex q = new Complex(.285f, .01f);
 
         // Mating values
-        int maxIterations = 100;        // Increasing this will increase lag
+        int maxIterations = 200;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 25;      // Currently cannot exceed 25, or there will be problems with the shader
-        int intermediateSteps = 100;    // Cannot be lower than 1
+        int matingIterations = 20;      // Currently cannot exceed 25, or there will be problems with the shader
+        int intermediateSteps = 50;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
         //float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
