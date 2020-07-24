@@ -1,6 +1,6 @@
 # Riemann-Mating
 
-This project attempts to show the slow mating of two Mandelbrot Julia Sets in real time, based on "The Thurston Algorithm for quadratic matings" (https://arxiv.org/pdf/1706.04177v1.pdf) by Wolf Jung.
+This project attempts to show the slow mating of two Mandelbrot Julia Sets in real time, based on "The Thurston Algorithm for quadratic matings" (https://arxiv.org/pdf/1706.04177v1.pdf) by Wolf Jung. Check out one of my videos that show this: https://youtu.be/WrBxQrx8ULc
 
 The algorithm used is largely taken from https://code.mathr.co.uk/mating: see this question for a more detailed explanation of the algorithm I'm using: https://math.stackexchange.com/questions/3747790
 
