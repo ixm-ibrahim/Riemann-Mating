@@ -661,10 +661,10 @@ namespace OpenTK_Reimann_Mating
 		}
 
 		public static Complex Sqrt(Complex z)
-		{
+		{/*
 			if (IsNaN(z) || IsInfinity(z))
 				return new Complex(double.PositiveInfinity, 0);
-
+			*/
 			double r = Abs(z);
 
 			//return new Complex(.5 * Math.Sqrt(2 * (r + z.R)), .5 * Sign(new Complex(z.I, -r)) * Math.Sqrt(2 * (r - z.R)));

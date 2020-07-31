@@ -224,6 +224,19 @@ namespace OpenTK_Reimann_Mating
             GL.Uniform2(uniformLocations[name], data);
         }
 
+        // Set a uniform Vector2 on the shader
+        public void SetVector2d(string name, Vector2d data)
+        {
+            double[] d = new double[]
+            {
+                data.X,
+                data.Y,
+            };
+
+            GL.UseProgram(Handle);
+            GL.Uniform2(uniformLocations[name], 2, d);
+        }
+
         // Set a uniform Vector2 array on the shader
         public void SetVector2Array(string name, Vector2[] data)
         {/*

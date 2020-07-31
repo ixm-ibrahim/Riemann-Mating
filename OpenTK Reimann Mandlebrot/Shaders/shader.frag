@@ -2,7 +2,7 @@
 
 #define MAX_FLOAT 3.402823466e+18
 #define PI 3.1415926535897932384626433832795
-#define MAX_MATING_ITER 25
+#define MAX_MATING_ITER 35
 
 // Only works with GLSL 4 and above
 const float infinity = 1.0 / 0.0;
@@ -40,6 +40,16 @@ uniform vec2 ma21;
 uniform vec2 ma22;
 uniform vec2 ma23;
 uniform vec2 ma24;
+uniform vec2 ma25;
+uniform vec2 ma26;
+uniform vec2 ma27;
+uniform vec2 ma28;
+uniform vec2 ma29;
+uniform vec2 ma30;
+uniform vec2 ma31;
+uniform vec2 ma32;
+uniform vec2 ma33;
+uniform vec2 ma34;
 uniform vec2 mb0;
 uniform vec2 mb1;
 uniform vec2 mb2;
@@ -65,6 +75,16 @@ uniform vec2 mb21;
 uniform vec2 mb22;
 uniform vec2 mb23;
 uniform vec2 mb24;
+uniform vec2 mb25;
+uniform vec2 mb26;
+uniform vec2 mb27;
+uniform vec2 mb28;
+uniform vec2 mb29;
+uniform vec2 mb30;
+uniform vec2 mb31;
+uniform vec2 mb32;
+uniform vec2 mb33;
+uniform vec2 mb34;
 uniform vec2 mc0;
 uniform vec2 mc1;
 uniform vec2 mc2;
@@ -90,6 +110,16 @@ uniform vec2 mc21;
 uniform vec2 mc22;
 uniform vec2 mc23;
 uniform vec2 mc24;
+uniform vec2 mc25;
+uniform vec2 mc26;
+uniform vec2 mc27;
+uniform vec2 mc28;
+uniform vec2 mc29;
+uniform vec2 mc30;
+uniform vec2 mc31;
+uniform vec2 mc32;
+uniform vec2 mc33;
+uniform vec2 mc34;
 uniform vec2 md0;
 uniform vec2 md1;
 uniform vec2 md2;
@@ -115,6 +145,16 @@ uniform vec2 md21;
 uniform vec2 md22;
 uniform vec2 md23;
 uniform vec2 md24;
+uniform vec2 md25;
+uniform vec2 md26;
+uniform vec2 md27;
+uniform vec2 md28;
+uniform vec2 md29;
+uniform vec2 md30;
+uniform vec2 md31;
+uniform vec2 md32;
+uniform vec2 md33;
+uniform vec2 md34;
 
 
 
@@ -168,6 +208,16 @@ void main()
     ma[22] = ma22;
     ma[23] = ma23;
     ma[24] = ma24;
+    ma[25] = ma25;
+    ma[26] = ma26;
+    ma[27] = ma27;
+    ma[28] = ma28;
+    ma[29] = ma29;
+    ma[30] = ma30;
+    ma[31] = ma31;
+    ma[32] = ma32;
+    ma[33] = ma33;
+    ma[34] = ma34;
     mb[0] = mb0;
     mb[1] = mb1;
     mb[2] = mb2;
@@ -193,6 +243,16 @@ void main()
     mb[22] = mb22;
     mb[23] = mb23;
     mb[24] = mb24;
+    mb[25] = mb25;
+    mb[26] = mb26;
+    mb[27] = mb27;
+    mb[28] = mb28;
+    mb[29] = mb29;
+    mb[30] = mb30;
+    mb[31] = mb31;
+    mb[32] = mb32;
+    mb[33] = mb33;
+    mb[34] = mb34;
     mc[0] = mc0;
     mc[1] = mc1;
     mc[2] = mc2;
@@ -218,6 +278,16 @@ void main()
     mc[22] = mc22;
     mc[23] = mc23;
     mc[24] = mc24;
+    mc[25] = mc25;
+    mc[26] = mc26;
+    mc[27] = mc27;
+    mc[28] = mc28;
+    mc[29] = mc29;
+    mc[30] = mc30;
+    mc[31] = mc31;
+    mc[32] = mc32;
+    mc[33] = mc33;
+    mc[34] = mc34;
     md[0] = md0;
     md[1] = md1;
     md[2] = md2;
@@ -243,6 +313,16 @@ void main()
     md[22] = md22;
     md[23] = md23;
     md[24] = md24;
+    md[25] = md25;
+    md[26] = md26;
+    md[27] = md27;
+    md[28] = md28;
+    md[29] = md29;
+    md[30] = md30;
+    md[31] = md31;
+    md[32] = md32;
+    md[33] = md33;
+    md[34] = md34;
 
 
     FragColor = vec4(Riemann(), 1.0);
@@ -387,13 +467,13 @@ vec3 JuliaMatingLoop(dvec2 z)
     if (length(z) <= 1)
     {
         color = vec3(.8);    // light gray
-        c = p;
+        c = vec2(p);
         w = vec2(R_t * z);
     }
     else
     {
         color = vec3(.2);    // dark grey
-        c = q;
+        c = vec2(q);
         
         if (abs(z.y) < 1e-7)    // reduces error
             w = vec2(R_t / z.x, 0);
@@ -446,11 +526,11 @@ vec3 Riemann()
     // Riemann projection
     vec3 pos = normalize(vec3(FragPosModel.x, FragPosModel.y, FragPosModel.z));
 
-    float tmp = (1 + (pos.y + 1)/(1 - pos.y)) / 2.0 / pow(2,zoom);
-    float r = pos.x*tmp;
-    float i = pos.z*tmp;
+    double tmp = (1 + (pos.y + 1)/(1 - pos.y)) / 2.0 / pow(2,zoom);
+    double r = pos.x*tmp;
+    double i = pos.z*tmp;
     
-    vec2 z = vec2(r + rPos, i + iPos);
+    dvec2 z = vec2(r + rPos, i + iPos);
 
     return JuliaMatingLoop(z);
 }
