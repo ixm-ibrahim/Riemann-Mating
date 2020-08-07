@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using OpenTK;
+using System.Numerics;
 
 namespace OpenTK_Reimann_Mating
 {
@@ -805,6 +806,399 @@ namespace OpenTK_Reimann_Mating
 		public static Complex Atanh(Complex z)
 		{
 			return .5 * Ln((1 + z) / (1 - z));
+		}
+	}
+
+	public struct BigComplex
+	{
+		public BigInteger R;
+		public BigInteger I;
+
+		public BigComplex(BigInteger real, BigInteger imaginary)
+		{
+			R = real;
+			I = imaginary;
+		}
+
+		public BigComplex(Complex z)
+		{
+			R = (int) z.R;
+			I = (int) z.I;
+		}
+
+		public static BigComplex Zero
+		{
+			get { return new BigComplex(0, 0); }
+		}
+
+		public static BigComplex i
+		{
+			get { return new BigComplex(0, 1); }
+		}
+
+		public BigInteger Real
+		{
+			get { return R; }
+
+			set { R = 1; }
+		}
+
+		public BigInteger Imaginary
+		{
+			get { return I; }
+
+			set { I = 1; }
+		}
+
+		public BigInteger Radius
+		{
+			get { return Sqrt(R * R + I * I); }
+		}
+
+		public BigInteger RadiusSquared
+		{
+			get { return R * R + I * I; }
+		}
+
+		public double Angle
+		{
+			get { return Arg(new BigComplex(R, I)); }
+		}
+
+		public Complex toComplex()
+		{
+			return new Complex((double)R, (double)I);
+		}
+
+		public override string ToString()
+		{
+			return (System.String.Format("({0}, {1}i)", R, I));
+		}
+
+		public override bool Equals(object obj)
+		{
+			return this == (BigComplex)obj;
+		}
+
+		public override int GetHashCode()
+		{
+			return R.GetHashCode() ^ I.GetHashCode();
+		}
+
+		public static bool operator ==(BigComplex z, int d)
+		{
+			return z.R.Equals(d);
+		}
+		public static bool operator ==(int d, BigComplex z)
+		{
+			return z.R.Equals(d);
+		}
+		public static bool operator ==(BigComplex z, double d)
+		{
+			return z.R.Equals(d);
+		}
+		public static bool operator ==(double d, BigComplex z)
+		{
+			return z.R.Equals(d);
+		}
+		public static bool operator ==(BigComplex z, BigComplex d)
+		{
+			return z.R.Equals(d.R) && z.I.Equals(d.I);
+		}
+
+		public static bool operator !=(BigComplex z, int d)
+		{
+			return !z.R.Equals(d);
+		}
+		public static bool operator !=(int d, BigComplex z)
+		{
+			return !z.R.Equals(d);
+		}
+		public static bool operator !=(BigComplex z, double d)
+		{
+			return !z.R.Equals(d);
+		}
+		public static bool operator !=(double d, BigComplex z)
+		{
+			return !z.R.Equals(d);
+		}
+		public static bool operator !=(BigComplex z, BigComplex d)
+		{
+			return !(z == d);
+		}
+
+		public static BigComplex operator +(BigComplex z, int d)
+		{
+			return z + d;
+		}
+		public static BigComplex operator +(int d, BigComplex z)
+		{
+			return z + d;
+		}
+		public static BigComplex operator +(BigComplex z, BigInteger d)
+		{
+			return d + z;
+		}
+		public static BigComplex operator +(BigInteger d, BigComplex z)
+		{
+			return new BigComplex(z.R + d, z.I);
+		}
+		public static BigComplex operator +(BigComplex z, BigComplex d)
+		{
+			return new BigComplex(z.R + d.R, z.I + d.I);
+		}
+
+		public static BigComplex operator -(BigComplex z)
+		{
+			return z * -1;
+		}
+		public static BigComplex operator -(BigComplex z, int d)
+		{
+			return new BigComplex(z.R - d, z.I);
+		}
+		public static BigComplex operator -(int d, BigComplex z)
+		{
+			return new BigComplex(d - z.R, -z.I);
+		}
+		public static BigComplex operator -(BigComplex z, BigInteger d)
+		{
+			return new BigComplex(z.R - d, z.I);
+		}
+		public static BigComplex operator -(BigInteger d, BigComplex z)
+		{
+			return new BigComplex(d - z.R, -z.I);
+		}
+		public static BigComplex operator -(BigComplex z, BigComplex d)
+		{
+			return new BigComplex(z.R - d.R, z.I - d.I);
+		}
+
+		public static BigComplex operator *(BigComplex z, int d)
+		{
+			return new BigComplex(z.R * d, z.I * d);
+		}
+		public static BigComplex operator *(int d, BigComplex z)
+		{
+			return z * d;
+		}
+		public static BigComplex operator *(BigComplex z, BigInteger d)
+		{
+			return new BigComplex(z.R * d, z.I * d);
+		}
+		public static BigComplex operator *(BigInteger d, BigComplex z)
+		{
+			return new BigComplex(z.R * d, z.I * d);
+		}
+		public static BigComplex operator *(BigComplex z, BigComplex d)
+		{
+			return new BigComplex(z.R * d.R - z.I * d.I, z.R * d.I + d.R * z.I);
+		}
+
+		public static BigComplex operator /(BigComplex z, int d)
+		{
+			return new BigComplex(z.R / d, z.I / d);
+		}
+		public static BigComplex operator /(int d, BigComplex z)
+		{
+			BigInteger x = z.R * z.R + z.I * z.I;
+
+			return new BigComplex(d * z.R / x, -d * z.I / x);
+		}
+		public static BigComplex operator /(BigComplex z, BigInteger d)
+		{
+			return new BigComplex(z.R / d, z.I / d);
+		}
+		public static BigComplex operator /(BigInteger d, BigComplex z)
+		{
+			BigInteger x = z.R * z.R + z.I * z.I;
+
+			return new BigComplex(d * z.R / x, -d * z.I / x);
+		}
+		public static BigComplex operator /(BigComplex z, BigComplex d)
+		{
+			BigInteger r = d.R * d.R + d.I * d.I;
+
+			if (r == 0)
+				return BigComplex.Zero;
+
+			return new BigComplex((z.R * d.R + z.I * d.I) / r, (d.R * z.I - z.R * d.I) / r);
+		}
+
+		public static BigComplex operator ^(BigComplex z, int p)
+		{
+			BigComplex nz = z;
+
+			if (p.Equals(0))
+				return new BigComplex(1, 0);
+			if (p.Equals(1))
+				return z;
+			if (p > 0)
+			{
+				for (int i = 0; i < p - 1; i++)
+					nz = nz * z;
+
+				return nz;
+			}
+
+			// p < 0
+			for (int i = 0; i < -p - 1; i++)
+				nz = nz * z;
+
+			if (BigComplex.IsZero(nz))
+				return BigComplex.Zero;
+
+			return 1 / nz;
+		}
+
+		public BigComplex Pow(int d)
+		{
+			return this ^ d;
+		}
+
+		public static bool IsZero(BigComplex z)
+		{
+			return z.R.Equals(0) && z.I.Equals(0);
+		}
+
+		public static BigComplex Inverse(BigComplex z)
+		{
+			BigInteger x = z.R * z.R + z.I * z.I;
+
+			return new BigComplex(z.R / x, -z.I / x);
+		}
+
+		public static BigComplex Conjugate(BigComplex z)
+		{
+			return new BigComplex(z.R, -z.I);
+		}
+
+		public static int Sign(BigComplex z)
+		{
+			return z.R.Equals(0) ? z.I.Sign : z.R.Sign;
+		}
+
+		public static BigInteger Magnitude(BigComplex z)
+		{
+			return z.Radius;
+		}
+
+		public static double Arg(BigComplex z)
+		{
+			double arg = 0;
+
+			/* 
+ 			 * 	Atan2 (four-quadrant arctangent):
+	    	 * 		
+	    	 * 		double atan = Math.Atan(z.I/z.R);
+	    	 * 		
+	    	 * 		if (z.R > 0)
+	    	 * 			arg = atan;
+	    	 * 		if (z.R < 0 && z.I >= 0)
+	    	 * 			arg = atan + Math.PI;
+	    	 * 		if (z.R < 0 && z.I < 0)
+	    	 * 			arg = atan - Math.PI;
+	    	 * 		if (z.R.Equals(0) && z.I > 0)
+	    	 * 			arg = Math.PI / 2;
+	    	 * 		if (z.R.Equals(0) && z.I < 0)
+	    	 * 			arg = -Math.PI / 2;
+	    	 * 		if (z == new Complex (0,0))
+	    	 * 			arg = Double.NaN;
+	    	 * 
+	    	 */
+
+			if (z.R.Equals(0))
+			{
+				if (z.I < 0 || z.I.Equals(-1))
+					arg = -Math.PI / 2;
+				else if (z.I.Equals(0))
+					return Double.NaN;
+				else if (z.I > 0 || z.I.Equals(1))
+					arg = Math.PI / 2;
+			}
+			else if (z.I.Equals(0))
+			{
+				if (z.R.Equals(1))
+					arg = 0;
+				else if (z.R.Equals(-1))
+					arg = Math.PI;
+			}
+			else if (z == new BigComplex(1, 1))
+				arg = Math.PI / 4;
+			else
+			{
+				for (int i = 0; i < 1000 && (Double.IsInfinity((double)z.R) || Double.IsInfinity((double)z.I)); i++)
+					z /= 10;
+
+				arg = Math.Atan2((double) z.I, (double) z.R);
+			}
+
+			return arg;
+		}
+
+		// https://stackoverflow.com/a/58697726/13394053
+		static BigInteger Sqrt(BigInteger number)
+		{
+			if (number < 9)
+			{
+				if (number == 0)
+					return 0;
+				if (number < 4)
+					return 1;
+				else
+					return 2;
+			}
+
+			BigInteger n = 0, p = 0;
+			var high = number >> 1;
+			var low = BigInteger.Zero;
+
+			while (high > low + 1)
+			{
+				n = (high + low) >> 1;
+				p = n * n;
+				if (number < p)
+				{
+					high = n;
+				}
+				else if (number > p)
+				{
+					low = n;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return number == p ? n : low;
+		}
+
+		public static BigComplex Sqrt(BigComplex c)
+		{
+			BigInteger r = c.Radius;
+
+			return (BigInteger) (.5 * Math.Sqrt(2)) * new BigComplex(Sqrt(r + c.R), c.I.Sign * Sqrt(r - c.R));
+		}
+	}
+
+	public class ComplexFix
+	{
+		public Complex c = Complex.Zero;
+		public BigComplex bigC = BigComplex.Zero;
+		public bool big = false;
+
+		public ComplexFix(Complex c, BigComplex bigC, bool big = false)
+		{
+			this.c = c;
+			this.bigC = bigC;
+			this.big = big;
+		}
+
+		public static ComplexFix Zero => new ComplexFix(Complex.Zero, BigComplex.Zero, false);
+
+		public static ComplexFix operator -(ComplexFix z)
+		{
+			return new ComplexFix(-z.c, -z.bigC, z.big);
 		}
 	}
 

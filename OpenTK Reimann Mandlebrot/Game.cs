@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System;
 using System.Drawing;
+using System.Numerics;
 
 namespace OpenTK_Reimann_Mating
 {
@@ -29,15 +30,15 @@ namespace OpenTK_Reimann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        Complex p = new Complex(-1, 0);             // basillica
-        Complex q = new Complex(-.123f, .745f);     // rabbit
-        //Complex p = new Complex(-.835f, -.2321f);
-        //Complex q = new Complex(.285f, .01f);
+        //Complex p = new Complex(-1, 0);             // basillica
+        //Complex q = new Complex(-.123f, .745f);     // rabbit
+        Complex p = new Complex(-.835f, -.2321f);
+        Complex q = new Complex(.285f, .01f);
 
         // Mating values
         int maxIterations = 200;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 35;      // Currently cannot exceed 35, or there will be problems with the shader
+        int matingIterations = 43;      // Currently cannot exceed 50, or there will be problems with the shader
         int intermediateSteps = 16;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
@@ -71,13 +72,13 @@ namespace OpenTK_Reimann_Mating
             t = new double[intermediateSteps];
             R = new double[intermediateSteps];
 
-            x = new Complex[matingIterations * intermediateSteps];
-            y = new Complex[matingIterations * intermediateSteps];
+            x = new ComplexFix[matingIterations * intermediateSteps];
+            y = new ComplexFix[matingIterations * intermediateSteps];
 
-            ma = new Vector2[matingIterations * intermediateSteps];
-            mb = new Vector2[matingIterations * intermediateSteps];
-            mc = new Vector2[matingIterations * intermediateSteps];
-            md = new Vector2[matingIterations * intermediateSteps];
+            ma = new OpenTK.Vector2[matingIterations * intermediateSteps];
+            mb = new OpenTK.Vector2[matingIterations * intermediateSteps];
+            mc = new OpenTK.Vector2[matingIterations * intermediateSteps];
+            md = new OpenTK.Vector2[matingIterations * intermediateSteps];
 
             var tmp = new Complex[intermediateSteps];
             const double R2 = 1e20;
@@ -92,25 +93,65 @@ namespace OpenTK_Reimann_Mating
                 tmp[s] = (1 + ((1 - t[s]) * q / R2)) / (1 + ((1 - t[s]) * p / R2));
             }
 
-            var p_i = Complex.Zero;
-            var q_i = Complex.Zero;
+            var p_i = ComplexFix.Zero;
+            var q_i = ComplexFix.Zero;
 
             for (int i = 0; i < matingIterations * intermediateSteps; i++)
             {
                 int s = i % intermediateSteps;
-                
+                /*
                 x[i] = Complex.Proj(tmp[s] * (p_i / R[s]) / (1 + ((1 - t[s]) * q / R4 * (p_i - p))));
                 y[i] = Complex.Proj(tmp[s] * (R[s] / q_i) * (1 + ((1 - t[s]) * p / R4 * (q_i - q))));
-                
-                /*
-                x[i] = p_i / R[s];
-                y[i] = R[s] / q_i;
                 */
+
+                x[i] = ComplexFix.Zero;
+                y[i] = ComplexFix.Zero;
+
+                if (p_i.big)
+                {
+                    x[i].big = true;
+                    x[i].bigC = p_i.bigC / (int)R[s];
+                    x[i].c = x[i].bigC.toComplex();
+                }
+                else
+                    x[i].c = p_i.c / R[s];
+
+                if (q_i.big)
+                {
+                    y[i].big = true;
+                    y[i].bigC = (int)R[s] / q_i.bigC;
+                    y[i].c = y[i].bigC.toComplex();
+                }
+                else
+                    y[i].c = R[s] / q_i.c;
+
 
                 if (s == intermediateSteps - 1)
                 {
-                    p_i = (p_i ^ 2) + p;
-                    q_i = (q_i ^ 2) + q;
+                    var p_test = (p_i.c ^ 2) + p;
+                    var q_test = (q_i.c ^ 2) + q;
+
+                    if (!p_i.big && Complex.IsInfinity(p_test))
+                    {
+                        p_i.big = true;
+                        p_i.bigC = new BigComplex(p_i.c);
+                    }
+                    if (!q_i.big && Complex.IsInfinity(q_test))
+                    {
+                        q_i.big = true;
+                        q_i.bigC = new BigComplex(q_i.c);
+                    }
+
+                    if (p_i.big)
+                        p_i.bigC = (p_i.bigC ^ 2) + new BigComplex(p);
+                    else
+                        p_i.c = p_test;
+
+                    if (q_i.big)
+                        q_i.bigC = (q_i.bigC ^ 2) + new BigComplex(q);
+                    else
+                        q_i.c = q_test;
+
                 }
             }
         }
@@ -122,9 +163,9 @@ namespace OpenTK_Reimann_Mating
             else
             {
                 if (zoomMode == 1)
-                    frame += (float)e.Time * intermediateSteps/5;
+                    frame += (float)e.Time * intermediateSteps/1;
                 else if (zoomMode == -1)
-                    frame -= (float)e.Time * intermediateSteps/5;
+                    frame -= (float)e.Time * intermediateSteps/1;
 
                 if (frame < 0)
                     frame = 0;
@@ -151,10 +192,11 @@ namespace OpenTK_Reimann_Mating
 
                 if (n > 0)
                 {
-                    var z_x = new Complex[matingIterations - n];
-                    var z_y = new Complex[matingIterations - n];
+                    var z_x = new ComplexFix[matingIterations - n];
+                    var z_y = new ComplexFix[matingIterations - n];
 
-                    var tmp2 = (1 - y[first]) / (1 - x[first]);
+                    var tmp = (1 - y[first].c) / (1 - x[first].c);
+                    var bigTmp = (1 - y[first].bigC) / (1 - x[first].bigC);
 
                     for (int k = 0; k < matingIterations - n; k++)
                     {
@@ -162,15 +204,46 @@ namespace OpenTK_Reimann_Mating
                         int next = intermediateSteps * k_next + s;
                         int prev = intermediateSteps * k + ((s + intermediateSteps - 1) % intermediateSteps);
 
-                        z_x[k] = Complex.Sqrt(Complex.Proj(tmp2 * (x[next] - x[first]) / (x[next] - y[first])));
-                        z_y[k] = Complex.Sqrt(Complex.Proj(tmp2 * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
+                        z_x[k] = ComplexFix.Zero;
+                        z_y[k] = ComplexFix.Zero;
 
-                        //Console.WriteLine(k + " (" + n + ")\n\t" + z_y[k] + "\n");
-                        /**/
-                        if ((-z_x[k] - x[prev]).Radius < (z_x[k] - x[prev]).Radius)
-                            z_x[k] = -z_x[k];
-                        if ((-z_y[k] - y[prev]).Radius < (z_y[k] - y[prev]).Radius)
-                            z_y[k] = -z_y[k];
+                        if (x[next].big || x[first].big || y[first].big)
+                        {
+                            z_x[k].bigC = BigComplex.Sqrt(bigTmp * (x[next].bigC - x[first].bigC) / (x[next].bigC - y[first].bigC));
+                            z_x[k].c = z_x[k].bigC.toComplex();
+
+                            if (Complex.IsInfinity(z_x[k].c))
+                                z_x[k].big = true;
+
+                            if ((-z_x[k].bigC - x[prev].bigC).RadiusSquared < (z_x[k].bigC - x[prev].bigC).RadiusSquared)
+                                z_x[k] = -z_x[k];
+                        }
+                        else
+                        {
+                            z_x[k].c = Complex.Sqrt(Complex.Proj(tmp * (x[next].c - x[first].c) / (x[next].c - y[first].c)));
+
+                            if ((-z_x[k].c - x[prev].c).RadiusSquared < (z_x[k].c - x[prev].c).RadiusSquared)
+                                z_x[k] = -z_x[k];
+                        }
+
+                        if (y[next].big || x[first].big || y[first].big)
+                        {
+                            z_y[k].bigC = BigComplex.Sqrt(bigTmp * (1 - (x[first].bigC / y[next].bigC)) / (1 - (y[first].bigC / y[next].bigC)));
+                            z_y[k].c = z_y[k].bigC.toComplex();
+
+                            if (Complex.IsInfinity(z_y[k].c))
+                                z_y[k].big = true;
+
+                            if ((-z_y[k].bigC - y[prev].bigC).RadiusSquared < (z_y[k].bigC - y[prev].bigC).RadiusSquared)
+                                z_y[k] = -z_y[k];
+                        }
+                        else
+                        {
+                            z_y[k].c = Complex.Sqrt(Complex.Proj(tmp * (1 - (x[first].c / y[next].c)) / (1 - (y[first].c / y[next].c))));
+
+                            if ((-z_y[k].c - y[prev].c).RadiusSquared < (z_y[k].c - y[prev].c).RadiusSquared)
+                                z_y[k] = -z_y[k];
+                        }
                     }
 
                     for (int k = 0; k < matingIterations - n; k++)
@@ -180,22 +253,22 @@ namespace OpenTK_Reimann_Mating
                     }
                 }
 
-                var d = y[first] - 1;
-                var c = 1 - x[first];
-                var b = x[first] * d;
-                var a = y[first] * c;
+                var d = y[first].c - 1;
+                var c = 1 - x[first].c;
+                var b = x[first].c * d;
+                var a = y[first].c * c;
 
-                ma[(int)frame] = new Vector2((float)a.R, (float)a.I);
-                mb[(int)frame] = new Vector2((float)b.R, (float)b.I);
-                mc[(int)frame] = new Vector2((float)c.R, (float)c.I);
-                md[(int)frame] = new Vector2((float)d.R, (float)d.I);
-                /*
+                ma[(int)frame] = new OpenTK.Vector2((float)a.R, (float)a.I);
+                mb[(int)frame] = new OpenTK.Vector2((float)b.R, (float)b.I);
+                mc[(int)frame] = new OpenTK.Vector2((float)c.R, (float)c.I);
+                md[(int)frame] = new OpenTK.Vector2((float)d.R, (float)d.I);
+                /**/
                 Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
                 Console.WriteLine("\tma: " + ma[(int)frame]);
                 Console.WriteLine("\tmb: " + mb[(int)frame]);
                 Console.WriteLine("\tmc: " + mc[(int)frame]);
                 Console.WriteLine("\tmd: " + md[(int)frame]);
-                */
+                
             }
         }
 
@@ -230,16 +303,13 @@ namespace OpenTK_Reimann_Mating
             // We add the time elapsed since last frame to the total amount of time passed.
             time += e.Time;
 
-            // Check to see if the window is focused
-            if (!Focused)
-                return;
-
             if (fullscreen)
                 WindowState = WindowState.Fullscreen;
             else
                 WindowState = WindowState.Normal;
 
-            camera.Input((float)e.Time);
+            if (Focused)
+                camera.Input((float)e.Time);
 
             UpdateFractal(e);
             
@@ -269,8 +339,8 @@ namespace OpenTK_Reimann_Mating
 
             shader.SetInt("maxIterations", maxIterations);
             shader.SetFloat("bailout", (float) bailout);
-            shader.SetVector2("p", new Vector2((float) p.R, (float) p.I));
-            shader.SetVector2("q", new Vector2((float) q.R, (float) q.I));
+            shader.SetVector2("p", new OpenTK.Vector2((float) p.R, (float) p.I));
+            shader.SetVector2("q", new OpenTK.Vector2((float) q.R, (float) q.I));
             shader.SetDouble("R_t", (float) R[s]);
             shader.SetInt("currentMatingIteration", n);
             
@@ -279,10 +349,10 @@ namespace OpenTK_Reimann_Mating
             shader.SetFloat("rPos", r);
             shader.SetFloat("iPos", i);
             
-            var ma_frame = new Vector2[n + 1];
-            var mb_frame = new Vector2[n + 1];
-            var mc_frame = new Vector2[n + 1];
-            var md_frame = new Vector2[n + 1];
+            var ma_frame = new OpenTK.Vector2[n + 1];
+            var mb_frame = new OpenTK.Vector2[n + 1];
+            var mc_frame = new OpenTK.Vector2[n + 1];
+            var md_frame = new OpenTK.Vector2[n + 1];
 
             for (int k = 0; k <= n; k++)
             {
@@ -303,7 +373,7 @@ namespace OpenTK_Reimann_Mating
 
 
             shader.SetVector3("cPos", camera.Position);
-            shader.SetVector3("pCenter", Vector3.Zero);
+            shader.SetVector3("pCenter", OpenTK.Vector3.Zero);
             shader.SetFloat("sideLength", sideLength);
             shader.SetFloat("n", 4);
             shader.SetFloat("minR", sideLength);
@@ -358,14 +428,14 @@ namespace OpenTK_Reimann_Mating
         double[] R = new double[16];
 
         // matingIterations * intermediateSteps
-        Complex[] x;
-        Complex[] y;
+        ComplexFix[] x;
+        ComplexFix[] y;
 
         // matingIterations * intermediateSteps
-        Vector2[] ma;
-        Vector2[] mb;
-        Vector2[] mc;
-        Vector2[] md;
+        OpenTK.Vector2[] ma;
+        OpenTK.Vector2[] mb;
+        OpenTK.Vector2[] mc;
+        OpenTK.Vector2[] md;
 
         // Once all the frames of the mating have been calculated, the user is free to go back and forth using the arrow keys
         bool completed = false;
@@ -375,10 +445,12 @@ namespace OpenTK_Reimann_Mating
 
         void ResetCamera()
         {
-            camera = new Camera(Vector3.UnitZ * 3, Width / (float)Height);
+            camera = new Camera(OpenTK.Vector3.UnitZ * 3, Width / (float)Height);
 
-            camera.Position = new Vector3(0, 0, cameraStartDist);
-            camera.target = new Vector3(0, 0, 10.1f);
+            camera.Position = new OpenTK.Vector3(0, 0, cameraStartDist);
+            camera.target = new OpenTK.Vector3(0, 0, 10.1f);
+
+            camera.cameraLock = true;
 
             // start by facing the south pole
             if (southPole)
@@ -391,7 +463,7 @@ namespace OpenTK_Reimann_Mating
             if (Focused)
             {
                 Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
-                camera.lastMousePos = new Vector2(Mouse.GetCursorState().X, Mouse.GetCursorState().Y);
+                camera.lastMousePos = new OpenTK.Vector2(Mouse.GetCursorState().X, Mouse.GetCursorState().Y);
             }
         }
 
