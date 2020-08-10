@@ -32,13 +32,22 @@ namespace OpenTK_Reimann_Mating
         // Julia Sets to mate
         //Complex p = new Complex(-1, 0);             // basillica
         //Complex q = new Complex(-.123f, .745f);     // rabbit
-        Complex p = new Complex(-.835f, -.2321f);
-        Complex q = new Complex(.285f, .01f);
+
+        //Complex p = new Complex(-.835f, -.2321f);         // desired coordinate (lacking proper precision)
+        //Complex q = new Complex(.285f, .01f);
+        Complex p = new Complex(-.835046398, -.231926809);  // better coordinate near misiurewicz point
+        Complex q = new Complex(.284884537, -.011121822);
+        //Complex p = new Complex(-1.770032905, -0.004054695);    // same two points as before, but on the period-3 cardioid (completely failed...)
+        //Complex q = new Complex(-1.749292997, -0.000237376);
+
+
+        //Complex p = new Complex(-1.74957376, -0.000107933);  // comparison between period-1 cardioid and period-3 cardioid near 20,1 (failed near the end)
+        //Complex q = new Complex(.270970258, -.005048222);
 
         // Mating values
         int maxIterations = 200;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 32;      // Currently cannot exceed 50, or there will be problems with the shader
+        int matingIterations = 50;      // Currently cannot exceed 50, or there will be problems with the shader
         int intermediateSteps = 16;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
