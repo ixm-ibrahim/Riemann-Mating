@@ -22,3 +22,6 @@ C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\O
 C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mating.csproj.CopyComplete
 C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.exe
 C:\Users\ixmib\source\repos\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.pdb
+C:\Users\ixmib\source\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mating.csprojAssemblyReference.cache
+C:\Users\ixmib\source\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.exe
+C:\Users\ixmib\source\Riemann-Mating\OpenTK Reimann Mandlebrot\obj\Debug\OpenTK Reimann Mandlebrot.pdb
