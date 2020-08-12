@@ -309,16 +309,13 @@ namespace OpenTK_Riemann_Mating
 
 		public static BigDouble Invert(BigDouble d)
 		{
-			if (d.Exponent % 2 == 1)
-				return new BigDouble(Math.Sqrt(d.Digits * 10), d.Exponent / 2);
-
-			return new BigDouble(Math.Sqrt(d.Digits), d.Exponent / 2);
+			return 1 / d;
 		}
 
 		public static BigDouble Sqrt(BigDouble d)
 		{
-			if (d.Exponent % 2 == 1)
-				return new BigDouble(Math.Sqrt(d.Digits * 10), d.Exponent / 2);
+			if (Math.Abs(d.Exponent % 2) == 1)
+				return new BigDouble(Math.Sqrt(d.Digits * 10), (d.Exponent - 1) / 2);
 
 			return new BigDouble(Math.Sqrt(d.Digits), d.Exponent / 2);
 		}

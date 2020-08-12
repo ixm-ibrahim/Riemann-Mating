@@ -33,10 +33,10 @@ namespace OpenTK_Riemann_Mating
         //BigComplex p = new BigComplex(-1, 0);             // basillica
         //BigComplex q = new BigComplex(-.123f, .745f);     // rabbit
 
-        //BigComplex p = new BigComplex(-.835f, -.2321f);         // desired coordinate (lacking proper precision)
-        //BigComplex q = new BigComplex(.285f, .01f);
-        BigComplex p = new BigComplex(-.835046398, -.231926809);  // better coordinate near misiurewicz point
-        BigComplex q = new BigComplex(.284884537, -.011121822);
+        BigComplex p = new BigComplex(-.835f, -.2321f);         // desired coordinate (lacking proper precision)
+        BigComplex q = new BigComplex(.285f, .01f);
+        //BigComplex p = new BigComplex(-.835046398, -.231926809);  // better coordinate near misiurewicz point
+        //BigComplex q = new BigComplex(.284884537, -.011121822);
         //BigComplex p = new BigComplex(-1.770032905, -0.004054695);    // same two points as before, but on the period-3 cardioid (completely failed...)
         //BigComplex q = new BigComplex(-1.749292997, -0.000237376);
 
@@ -47,7 +47,7 @@ namespace OpenTK_Riemann_Mating
         // Mating values
         int maxIterations = 200;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 32;      // Currently cannot exceed 50, or there will be problems with the shader
+        int matingIterations = 50;      // Currently cannot exceed 50, or there will be problems with the shader
         int intermediateSteps = 16;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
@@ -160,13 +160,21 @@ namespace OpenTK_Riemann_Mating
 
                 int first = intermediateSteps + s;
 
+                //Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
+                
                 if (n > 0)
                 {
                     var z_x = new BigComplex[matingIterations - n];
                     var z_y = new BigComplex[matingIterations - n];
 
                     var tmp = (1 - y[first]) / (1 - x[first]);
-
+                    /*
+                    Console.WriteLine("\ttmp: " + tmp);
+                    Console.WriteLine("\t\tx[first]: " + x[first]);
+                    Console.WriteLine("\t\t\t1 - x[first]: " + (1 - x[first]));
+                    Console.WriteLine("\t\ty[first]: " + x[first]);
+                    Console.WriteLine("\t\t\t1 - y[first]: " + (1 - y[first]));
+                    */
                     for (int k = 0; k < matingIterations - n; k++)
                     {
                         int k_next = k + 1;
@@ -202,14 +210,16 @@ namespace OpenTK_Riemann_Mating
 
                 if (frame > 0)
                 {
-                    /**/
                     Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
                     Console.WriteLine("\tma: " + ma[(int)frame]);
                     Console.WriteLine("\tmb: " + mb[(int)frame]);
                     Console.WriteLine("\tmc: " + mc[(int)frame]);
                     Console.WriteLine("\tmd: " + md[(int)frame]);
+                    /*
 
-
+                    Console.WriteLine("\tx[first]: " + x[first]);
+                    Console.WriteLine("\ty[first]: " + y[first]);
+                    */
                     //Console.WriteLine(ma[(int)frame - 1] - ma[(int)frame]);
                 }
             }
