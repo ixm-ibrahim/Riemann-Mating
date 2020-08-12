@@ -699,40 +699,43 @@ namespace UnitTests
         [TestMethod]
         public void Julia()
         {
-            var p = new Complex(-.835046398, -.231926809);
-            var q = new Complex(.284884537, -.011121822);
-            var p_big = new BigComplex(-.835046398, -.231926809);
-            var q_big = new BigComplex(.284884537, -.011121822);
+            //var p = new BigComplex(-.835046398, -.231926809);
+            //var q = new BigComplex(.284884537, -.011121822);
+            var p = new BigComplex(-.835, -.2321);
+            var q = new BigComplex(.285, .01);
 
-            var zp = Complex.Zero;
-            var zq = Complex.Zero;
-            var zp_big = BigComplex.Zero;
-            var zq_big = BigComplex.Zero;
+            var zp = BigComplex.Zero;
+            var zq = BigComplex.Zero;
 
-            for (int i = 0; i < 10; i++)
+            int break_i = 35;
+
+            for (int i = 0; i < 50; i++)
             {
+                if (i == break_i)
+                {
+                    int a = 0;
+                }
+
                 zp = (zp ^ 2);
                 zq = (zq ^ 2);
-                zp_big = (zp_big ^ 2);
-                zq_big = (zq_big ^ 2);
 
-                Console.WriteLine(i);
-                Console.WriteLine("\tzp: " + zp);
-                Console.WriteLine("\tzp_big: " + zp_big);
-                Console.WriteLine("\tzq: " + zq);
-                Console.WriteLine("\tzq_big: " + zq_big);
+                if (i >= break_i)
+                {
+                    Console.WriteLine(i);
+                    Console.WriteLine("\tzp: " + zp);
+                    Console.WriteLine("\tzq: " + zq);
+                }
 
-                zp += p_big.ToComplex();
-                zq += q_big.ToComplex();
-                zp_big += p_big;
-                zq_big += q_big;
+                zp += p;
+                zq += q;
 
-                Console.WriteLine();
-                Console.WriteLine("\tzp: " + zp);
-                Console.WriteLine("\tzp_big: " + zp_big);
-                Console.WriteLine("\tzq: " + zq);
-                Console.WriteLine("\tzq_big: " + zq_big);
-                Console.WriteLine();
+                if (i >= break_i)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("\tzp: " + zp);
+                    Console.WriteLine("\tzq: " + zq);
+                    Console.WriteLine();
+                }
             }
         }
     }

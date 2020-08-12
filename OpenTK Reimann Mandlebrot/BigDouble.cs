@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenTK_Riemann_Mating
 {
+	//@TODO: Change exponent to BigInteger
 	public class BigDouble
 	{
 		double digits;
@@ -150,6 +151,10 @@ namespace OpenTK_Riemann_Mating
 		{
 			int diff = a.Exponent - b.Exponent;
 
+			if (diff < -300)
+				return b;
+			if (diff > 300)
+				return a;
 			if (diff >= 0)
 				return new BigDouble((a.digits * Math.Pow(10, diff)) + b.digits, b.exponent).Simplify();
 

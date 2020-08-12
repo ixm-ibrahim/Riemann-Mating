@@ -30,13 +30,17 @@ namespace OpenTK_Riemann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        //BigComplex p = new BigComplex(-1, 0);             // basillica
-        //BigComplex q = new BigComplex(-.123f, .745f);     // rabbit
+        BigComplex p = new BigComplex(-1, 0);             // basillica
+        BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
-        BigComplex p = new BigComplex(-.835f, -.2321f);         // desired coordinate (lacking proper precision)
-        BigComplex q = new BigComplex(.285f, .01f);
-        //BigComplex p = new BigComplex(-.835046398, -.231926809);  // better coordinate near misiurewicz point
+        //BigComplex p = new BigComplex(-.835, -.2321);
+        //BigComplex q = new BigComplex(.285, .01);
+
+        //BigComplex p = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
+        //BigComplex q = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
+        //BigComplex p = new BigComplex(.284884537, -.011121822);
         //BigComplex q = new BigComplex(.284884537, -.011121822);
+
         //BigComplex p = new BigComplex(-1.770032905, -0.004054695);    // same two points as before, but on the period-3 cardioid (completely failed...)
         //BigComplex q = new BigComplex(-1.749292997, -0.000237376);
 
@@ -47,7 +51,7 @@ namespace OpenTK_Riemann_Mating
         // Mating values
         int maxIterations = 200;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 50;      // Currently cannot exceed 50, or there will be problems with the shader
+        int matingIterations = 75;      // Currently cannot exceed 50, or there will be problems with the shader
         int intermediateSteps = 16;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
@@ -84,10 +88,10 @@ namespace OpenTK_Riemann_Mating
             x = new BigComplex[matingIterations * intermediateSteps];
             y = new BigComplex[matingIterations * intermediateSteps];
 
-            ma = new OpenTK.Vector2d[matingIterations * intermediateSteps];
-            mb = new OpenTK.Vector2d[matingIterations * intermediateSteps];
-            mc = new OpenTK.Vector2d[matingIterations * intermediateSteps];
-            md = new OpenTK.Vector2d[matingIterations * intermediateSteps];
+            ma = new Vector2d[matingIterations * intermediateSteps];
+            mb = new Vector2d[matingIterations * intermediateSteps];
+            mc = new Vector2d[matingIterations * intermediateSteps];
+            md = new Vector2d[matingIterations * intermediateSteps];
 
             for (int s = 0; s < intermediateSteps; s++)
             {
@@ -97,9 +101,6 @@ namespace OpenTK_Riemann_Mating
 
             var p_i = BigComplex.Zero;
             var q_i = BigComplex.Zero;
-
-            var pi = Complex.Zero;
-            var qi = Complex.Zero;
 
             for (int i = 0; i < matingIterations * intermediateSteps; i++)
             {
@@ -116,13 +117,10 @@ namespace OpenTK_Riemann_Mating
                     p_i = (p_i ^ 2) + p;
                     q_i = (q_i ^ 2) + q;
 
-                    pi = (pi ^ 2) + p.ToComplex();
-                    qi = (qi ^ 2) + q.ToComplex();
-
-                    //Console.WriteLine((((int)i - s) / intermediateSteps) + "\n\t" + p_i + "\n\t" + pi + "\n\n\t" + q_i + "\n\t" + qi);
+                    //Console.WriteLine(((i - s) / intermediateSteps) + "\n\t" + p_i + "\n\t" + q_i);
                 }
 
-                Console.WriteLine(i + "\n\t" + x[i] + "\n\t" + y[i]);
+                //Console.WriteLine(i + "\n\t" + x[i] + "\n\t" + y[i]);
             }
         }
 
@@ -160,7 +158,7 @@ namespace OpenTK_Riemann_Mating
 
                 int first = intermediateSteps + s;
 
-                //Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
+                Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
                 
                 if (n > 0)
                 {
@@ -215,8 +213,8 @@ namespace OpenTK_Riemann_Mating
                     Console.WriteLine("\tmb: " + mb[(int)frame]);
                     Console.WriteLine("\tmc: " + mc[(int)frame]);
                     Console.WriteLine("\tmd: " + md[(int)frame]);
+                    
                     /*
-
                     Console.WriteLine("\tx[first]: " + x[first]);
                     Console.WriteLine("\ty[first]: " + y[first]);
                     */
@@ -269,6 +267,7 @@ namespace OpenTK_Riemann_Mating
         }
 
         // Render loop
+        //@TODO: after all the frames are completed, convert spherical coordinates to texture and render it in a texture shader (so as to avoid calculating the mating iterations upon every render update)
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
@@ -287,7 +286,7 @@ namespace OpenTK_Riemann_Mating
             int n = ((int)frame - s) / intermediateSteps;
 
             // Comment this out to remove console updatess
-            //Console.WriteLine("frame: " + (int)frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
+            Console.WriteLine("frame: " + (int)frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
 
             shader.SetInt("maxIterations", maxIterations);
             shader.SetFloat("bailout", (float)bailout);
