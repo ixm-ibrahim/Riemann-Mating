@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigDouble.cs" />
     <Compile Include="BigRational.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Math.cs" />

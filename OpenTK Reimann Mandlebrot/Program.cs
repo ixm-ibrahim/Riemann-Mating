@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTK_Reimann_Mating
+namespace OpenTK_Riemann_Mating
 {
     class Program
     {

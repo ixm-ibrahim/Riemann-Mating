@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace OpenTK_Reimann_Mating
+namespace OpenTK_Riemann_Mating
 {
     class Shader
     {
@@ -121,7 +121,7 @@ namespace OpenTK_Reimann_Mating
             string infoLog = GL.GetShaderInfoLog(shader);
 
             if (!infoLog.StartsWith("WARNING") && infoLog != String.Empty)
-                    throw new Exception(infoLog);
+                throw new Exception(infoLog);
 
             return infoLog;
         }
@@ -182,7 +182,7 @@ namespace OpenTK_Reimann_Mating
             var v2 = new Vector2[n];
 
             for (int i = 0; i < n * 2; i += 2)
-                v2[i/2] = new Vector2(a[i], a[i+1]);
+                v2[i / 2] = new Vector2(a[i], a[i + 1]);
 
             return v2;
         }
@@ -255,7 +255,29 @@ namespace OpenTK_Reimann_Mating
 
             for (int i = 0; i < data.Length; i++)
             {
-                GL.Uniform2(uniformLocations[name+i], data[i]);
+                GL.Uniform2(uniformLocations[name + i], data[i]);
+            }
+        }
+
+        // Set a uniform Vector2 array on the shader
+        public void SetVector2dArray(string name, Vector2d[] data)
+        {/*
+            var floats = new float[data.Length * 2];
+
+            for (int i = 0; i < data.Length * 2; i += 2)
+            {
+                floats[i] = data[i / 2].X;
+                floats[i + 1] = data[i / 2].Y;
+            }
+
+            GL.UseProgram(Handle);
+            GL.Uniform2(uniformLocations[name + "[0]"], data.Length, floats);*/
+
+            GL.UseProgram(Handle);
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                GL.Uniform2(uniformLocations[name + i], new Vector2((float)data[i].X, (float)data[i].Y));
             }
         }
 

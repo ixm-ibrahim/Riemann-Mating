@@ -4,7 +4,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 
-namespace OpenTK_Reimann_Mating
+namespace OpenTK_Riemann_Mating
 {
 	public class Camera
 	{

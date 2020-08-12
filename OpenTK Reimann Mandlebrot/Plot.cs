@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace OpenTK_Reimann_Mating
+namespace OpenTK_Riemann_Mating
 {
     public struct TexturedVertex
     {
