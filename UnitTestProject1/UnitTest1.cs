@@ -738,5 +738,22 @@ namespace UnitTests
                 }
             }
         }
+
+        [TestMethod]
+        public void Precision()
+        {
+            var a = new BigDouble(1.7, -13);
+            var b = new BigDouble(2.6, -26);
+
+            Console.WriteLine(a + b);
+            Console.WriteLine(a - b);
+            Console.WriteLine(a*a);
+            Console.WriteLine(b*b);
+            Console.WriteLine(a*a + b*b);
+            Console.WriteLine(a*a - b*b);
+            Console.WriteLine();
+            Console.WriteLine(BigDouble.Sqrt(a * a + b * b));
+            Console.WriteLine(BigDouble.Sqrt(a * a + b * b) - a);
+        }
     }
 }

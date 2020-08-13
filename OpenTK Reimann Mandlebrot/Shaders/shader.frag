@@ -795,14 +795,12 @@ vec3 JuliaMatingLoop(dvec2 z)
     if (length(z) <= 1)
     {
         color = pow(normalize(FragPosModel),vec3(1));
-        color = vec3(sin(color.x + time/11) *.4 + .4, sin(color.y + 2 * time / 13) *.4 + .4, sin(color.z + 3 * time / 17) *.4 + .4);
         c = vec2(p);
         w = vec2(R_t * z);
     }
     else
     {
         color = pow(1 - normalize(FragPosModel),vec3(1));
-        color = vec3(sin(color.x - time/11) *.4 + .4, sin(color.y - 2 * time / 13) *.4 + .4, sin(color.z - 3 * time / 17) *.4 + .4);
         c = vec2(q);
         
         if (abs(z.y) < 1e-7)    // reduces error
@@ -811,21 +809,20 @@ vec3 JuliaMatingLoop(dvec2 z)
             w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
             //w = vec2(dcproj(dc_div(dvec2(R_t,0), z)));
     }
-
-
+    
+    
     int iter = 0;
     for (iter = currentMatingIteration + 1; iter < maxIterations && (w.x * w.x + w.y * w.y < bailout); iter++)
         w = c_2(w) + c;
 
     
     // coloring
+    color = vec3(sin(color.x - time/11) *.4 + .4, sin(color.y - 2 * time / 13) *.4 + .4, sin(color.z - 3 * time / 17) *.4 + .4);
+    color = clamp(color, .1, 1);
+
     if (iter >= maxIterations)
     {
-
         //color = pow(normalize(FragPosModel), vec3(.9));
-        //color = mix(1 - pow(normalize(FragPosModel), vec3(.9)), vec3(sin(1 * time / 11), sin(2 * time / 13), sin(3 * time / 17)), color.x);
-        //color *= vec3(sin(1 * time / 11) * .5 + .5, sin(2 * time / 13) * .5 + .5, sin(3 * time / 17) * .5 + .5);
-
         vec2 theta = w - (vec2(1,0) - c_sqrt(vec2(1,0) - 4*c)) / 2;
         color *= (atan(theta.y, theta.x) + PI) / (2 * PI);
     }
@@ -839,18 +836,17 @@ vec3 JuliaMatingLoop(dvec2 z)
 
         if (isinf(length(w)))
             mu = iter + 1 - log2(log2(MAX_FLOAT));
-            //mu = 0;
         else
             mu = iter + 1 - log2(log2(length(w)));
 
-        float t = time * -5;
-
-        vec3 muColor = vec3(sin(7 * (mu+t/2) / 17), sin(11 * (mu+t/3) / 29), sin(13 * (mu+t/5) / 41));
+        float t = time * 5;
+        vec3 muColor = vec3(sin(7 * (mu+t/2) / 17) * .5 + .5, sin(11 * (mu+t/3) / 29) * .5 + .5, sin(13 * (mu+t/5) / 41) * .5 + .5);
         
         //color = vec3(1);
         //color = muColor;
         color = 1 - muColor;
-        
+        //color = (c == vec2(p)) ? muColor : -muColor;
+        //color *= muColor;
     }
 
     return color;

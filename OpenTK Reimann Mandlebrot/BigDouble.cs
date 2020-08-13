@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace OpenTK_Riemann_Mating
 {
-	//@TODO: Change exponent to BigInteger
 	public class BigDouble
 	{
 		double digits;
@@ -23,6 +22,8 @@ namespace OpenTK_Riemann_Mating
 		{
 			digits = n;
 			exponent = e;
+
+			Simplify();
 		}
 
 
@@ -39,7 +40,7 @@ namespace OpenTK_Riemann_Mating
 
 		public override string ToString()
 		{
-			return (Double.IsInfinity(ToDouble())) ? Digits + " x10^ " + Exponent : ToDouble().ToString();
+			return (Exponent > 308) ? Digits + " x10^ " + Exponent : ToDouble().ToString();
 		}
 		public override bool Equals(object obj)
 		{
@@ -72,6 +73,12 @@ namespace OpenTK_Riemann_Mating
 		{
 			if (n == 0)
 				return BigDouble.Zero;
+			if (n == Double.NaN)
+				return BigDouble.NaN;
+			if (n == Double.PositiveInfinity)
+				return BigDouble.PositiveInfinity;
+			if (n == Double.NegativeInfinity)
+				return BigDouble.NegativeInfinity;
 
 			int e = GetExponent(n);
 
@@ -83,7 +90,6 @@ namespace OpenTK_Riemann_Mating
 		{
 			return (float)a.ToDouble();
 		}
-
 		public static explicit operator double(BigDouble a)
 		{
 			return a.ToDouble();
@@ -153,12 +159,18 @@ namespace OpenTK_Riemann_Mating
 		}
 		public static BigDouble operator +(BigDouble a, BigDouble b)
 		{
-			int diff = a.Exponent - b.Exponent;
+			double test = a.ToDouble() + b.ToDouble();
 
-			if (diff < -300)
+			if (!Double.IsNaN(test) && !Double.IsInfinity(test))
+				return new BigDouble(test).Simplify();
+
+			int diff = a.Exponent - b.Exponent;
+			
+			if (diff < -20)
 				return b;
-			if (diff > 300)
+			if (diff > 20)
 				return a;
+
 			if (diff >= 0)
 				return new BigDouble((a.digits * Math.Pow(10, diff)) + b.digits, b.exponent).Simplify();
 
@@ -197,8 +209,7 @@ namespace OpenTK_Riemann_Mating
 
 		public static BigDouble operator /(BigDouble a, double b)
 		{
-			//return new BigDouble(a.Digits / b, GetDigitNum(b) - 1).Simplify();
-			return (1 / (b / a)).Simplify();
+			return new BigDouble(a.Digits / b, a.Exponent).Simplify();
 		}
 		public static BigDouble operator /(double a, BigDouble b)
 		{
@@ -213,16 +224,17 @@ namespace OpenTK_Riemann_Mating
 		{
 			return new BigDouble(Math.Pow(a.Digits, b), a.Exponent * b).Simplify();
 		}
-		/*
+		//@TODO: Fix potential overflow here, with the second pow method
         public static BigDouble operator ^(double a, BigDouble b)
         {
-            return Math.Pow(a, b.Digits) * Math.Pow(a, Math.Pow(10, b.Exponent)).Simplify();
+            return new BigDouble(Math.Pow(a, b.Digits) * Math.Pow(a, Math.Pow(10, b.Exponent))).Simplify();
         }
+		//@TODO: Figure out how to take the power of a decimal (need to always have an integer exponent for standard scientific notation)
+        /*
         public static BigDouble operator ^(BigDouble a, BigDouble b)
         {
             return (a ^ b.Digits) * (a ^ (int) Math.Pow(10, b.Exponent)).Simplify();
-        }
-        */
+        }*/
 
 		static int GetExponent(double n)
 		{
