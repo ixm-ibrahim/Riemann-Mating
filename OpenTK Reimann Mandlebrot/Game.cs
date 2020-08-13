@@ -158,30 +158,50 @@ namespace OpenTK_Riemann_Mating
 
                 int first = intermediateSteps + s;
 
-                Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
-                
-                if (n > 0)
+                if (n == 1 && s == 11)
+                    Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
+
+                    if (n > 0)
                 {
                     var z_x = new BigComplex[matingIterations - n];
                     var z_y = new BigComplex[matingIterations - n];
 
                     var tmp = (1 - y[first]) / (1 - x[first]);
-                    /*
-                    Console.WriteLine("\ttmp: " + tmp);
-                    Console.WriteLine("\t\tx[first]: " + x[first]);
-                    Console.WriteLine("\t\t\t1 - x[first]: " + (1 - x[first]));
-                    Console.WriteLine("\t\ty[first]: " + x[first]);
-                    Console.WriteLine("\t\t\t1 - y[first]: " + (1 - y[first]));
-                    */
+                    /**/
+                    if (n == 1 && s == 11)
+                    {
+                        Console.WriteLine("\ttmp: " + tmp);
+                        Console.WriteLine("\t\tx[first]: " + x[first]);
+                        Console.WriteLine("\t\t\t1 - x[first]: " + (1 - x[first]));
+                        Console.WriteLine("\t\ty[first]: " + x[first]);
+                        Console.WriteLine("\t\t\t1 - y[first]: " + (1 - y[first]));
+                    }
+
                     for (int k = 0; k < matingIterations - n; k++)
                     {
                         int k_next = k + 1;
                         int next = intermediateSteps * k_next + s;
                         int prev = intermediateSteps * k + ((s + intermediateSteps - 1) % intermediateSteps);
 
-                        z_x[k] = BigComplex.Sqrt(tmp * (x[next] - x[first]) / (x[next] - y[first]));
-                        z_y[k] = BigComplex.Sqrt(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next])));
+                        if (n == 1 && s == 11 && k == 1)
+                        {
+                            int test = 0;
+                        }
 
+                        z_x[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
+                        z_y[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
+
+                        if (n == 1 && s == 11)
+                        {
+                            Console.WriteLine("\tk: " + k);
+                            Console.WriteLine("\t\tz_x[k]: " + z_x[k]);
+                            Console.WriteLine("\t\tz_y[k]: " + z_y[k]);
+                            Console.WriteLine();
+                            Console.WriteLine("\t\t(x[next] - x[first]): " + (x[next] - x[first]));
+                            Console.WriteLine("\t\t(x[next] - y[first]): " + (x[next] - y[first]));
+                            Console.WriteLine("\t\ttmp * (x[next] - x[first]) / (x[next] - y[first]): " + (tmp * (x[next] - x[first]) / (x[next] - y[first])));
+                            Console.WriteLine("\t\tBigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])): " + BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
+                        }
 
                         if ((-z_x[k] - x[prev]).RadiusSquared < (z_x[k] - x[prev]).RadiusSquared)
                             z_x[k] = -z_x[k];
@@ -207,14 +227,14 @@ namespace OpenTK_Riemann_Mating
                 md[(int)frame] = new Vector2d(d.R.ToDouble(), d.I.ToDouble());
 
                 if (frame > 0)
-                {
+                {/*
                     Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
                     Console.WriteLine("\tma: " + ma[(int)frame]);
                     Console.WriteLine("\tmb: " + mb[(int)frame]);
                     Console.WriteLine("\tmc: " + mc[(int)frame]);
                     Console.WriteLine("\tmd: " + md[(int)frame]);
                     
-                    /*
+                    
                     Console.WriteLine("\tx[first]: " + x[first]);
                     Console.WriteLine("\ty[first]: " + y[first]);
                     */
@@ -286,7 +306,7 @@ namespace OpenTK_Riemann_Mating
             int n = ((int)frame - s) / intermediateSteps;
 
             // Comment this out to remove console updatess
-            Console.WriteLine("frame: " + (int)frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
+            //Console.WriteLine("frame: " + (int)frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
 
             shader.SetInt("maxIterations", maxIterations);
             shader.SetFloat("bailout", (float)bailout);
