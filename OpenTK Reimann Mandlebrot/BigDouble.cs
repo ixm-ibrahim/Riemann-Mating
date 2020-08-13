@@ -528,10 +528,23 @@ namespace OpenTK_Riemann_Mating
 
 		public static BigComplex operator /(BigComplex z, double d)
 		{
+			if (d == 0)
+				return PositiveInfinity;
+			if (d == Double.PositiveInfinity)
+				return Zero;
+
 			return new BigComplex(z.R / d, z.I / d);
 		}
 		public static BigComplex operator /(double d, BigComplex z)
 		{
+			if (z == Zero)
+				return PositiveInfinity;
+			if (z == PositiveInfinity)
+				return Zero;
+
+			if (z.I == 0)
+				return new BigComplex(d / z.R, BigDouble.Zero);
+
 			BigDouble x = (z.R * z.R) + (z.I * z.I);
 
 			return new BigComplex(d * z.R / x, -d * z.I / x);
@@ -542,12 +555,22 @@ namespace OpenTK_Riemann_Mating
 		}
 		public static BigComplex operator /(BigDouble d, BigComplex z)
 		{
+			if (z == Zero)
+				return PositiveInfinity;
+			if (z == PositiveInfinity)
+				return Zero;
+
 			BigDouble x = z.R * z.R + z.I * z.I;
 
 			return new BigComplex(d * z.R / x, -d * z.I / x);
 		}
 		public static BigComplex operator /(BigComplex z, BigComplex d)
 		{
+			if (d == Zero)
+				return PositiveInfinity;
+			if (d == PositiveInfinity)
+				return Zero;
+
 			BigDouble r = d.R * d.R + d.I * d.I;
 
 			if (r == 0)
@@ -687,6 +710,12 @@ namespace OpenTK_Riemann_Mating
 
 		public static BigComplex Sqrt(BigComplex c)
 		{
+			if (IsNaN(c) || IsInfinity(c))
+				return new BigComplex(double.PositiveInfinity, 0);
+
+			if (c.I == 0)
+				return new BigComplex(BigDouble.Sqrt(c.R), BigDouble.Zero);
+
 			BigDouble r = c.Radius;
 			double test = c.ToComplex().Radius - c.R.ToDouble();
 

@@ -30,24 +30,27 @@ namespace OpenTK_Riemann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        BigComplex q = new BigComplex(-1, 0);             // basillica
-        BigComplex p = new BigComplex(-.123, .745);       // rabbit
+        BigComplex p = new BigComplex(-1, 0);             // basillica
+        BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
-        //BigComplex p = new BigComplex(0, 0);                // error?
+        //BigComplex p = new BigComplex(0, 0);
+        //BigComplex p = new BigComplex(-1, 0);
         //BigComplex q = new BigComplex(-1, 0);
 
         //BigComplex p = new BigComplex(-1, 0);             // basilica
         //BigComplex q = new BigComplex(0, -1);             // dendrite
 
         //BigComplex p = new BigComplex(-.835, -.2321);
+        //BigComplex q = new BigComplex(-.835, -.2321);
+        //BigComplex p = new BigComplex(.285, -.01);
         //BigComplex q = new BigComplex(.285, -.01);
 
         //BigComplex p = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
-        //BigComplex q = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
+        //BigComplex q = new BigComplex(-.835046398, -.231926809);  // precision error near the end when these two are used
         //BigComplex p = new BigComplex(.284884537, -.011121822);
         //BigComplex q = new BigComplex(.284884537, -.011121822);
 
-        //BigComplex p = new BigComplex(-1.770032905, -0.004054695);    // same two points as before, but on the period-3 cardioid (completely failed...)
+        //BigComplex p = new BigComplex(-1.770032905, -0.004054695);    // same two points as the previous, but on the period-3 cardioid (completely failed...)
         //BigComplex q = new BigComplex(-1.749292997, -0.000237376);
 
         //BigComplex p = new BigComplex(-1.74957376, -0.000107933);  // comparison between period-1 cardioid and period-3 cardioid near their respective 20,1 bulbs
@@ -62,22 +65,19 @@ namespace OpenTK_Riemann_Mating
         //BigComplex q = new BigComplex(-0.7, .4);
 
         // Mating values
-        int maxIterations = 1000;        // Increasing this will increase lag
-        double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 75;      // Currently cannot exceed 50, or there will be problems with the shader
-        int intermediateSteps = 25;     // Cannot be lower than 1
+        int maxIterations = 300;        // Increasing this may increase lag
+        double bailout = 100;           //@TODO: implement distance estimation coloring
+        int matingIterations = 35;      // Cannot exceed 75
+        int intermediateSteps = 16;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
-        //float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
+        //float zoom = -5f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
         float zoom = 0f;    // normal Riemann Sphere zoom
-        //float zoom = 4f;    // viewing as if the complex plane is flat, with q mating into p (viewed from the north pole)
+        //float zoom = 5f;    // viewing as if the complex plane is flat, with q mating into p (viewed from the north pole)
 
         // Starting position on the complex plane (centered at zero on the south pole of Riemann Sphere)
         float r = 0;
         float i = 0;
-
-        // Set this to "true" if you want the camera to start by facing the south pole (best paired with the zoom = 4 option above)
-        bool southPole = false;
 
         //float cameraStartDist = 11.5f;  // Looking at a small part of it (best paired with zoom = 4 option above)
         float cameraStartDist = 23.5f;  // Looking at the entire sphere (best paired with zoom = 0 option above)
@@ -125,12 +125,12 @@ namespace OpenTK_Riemann_Mating
                 int s = i % intermediateSteps;
 
                 x[i] = p_i / R[s];
-                y[i] = BigComplex.Proj(R[s] / q_i);
+                y[i] = R[s] / q_i;
 
                 /*
-                if (BigComplex.IsNaN(x[i]))
+                if (BigComplex.IsNaN(x[i]) || BigComplex.IsInfinity(x[i]))
                     x[i] = BigComplex.Proj(tmp[s] * (p_i / R[s]) / (1 + ((1 - t[s]) * q / R4 * (p_i - p))));
-                if (BigComplex.IsNaN(x[i]))
+                if (BigComplex.IsNaN(y[i]) || BigComplex.IsInfinity(y[i]))
                     y[i] = BigComplex.Proj(tmp[s] * (R[s] / q_i) * (1 + ((1 - t[s]) * p / R4 * (q_i - q))));
                 */
 
@@ -196,7 +196,7 @@ namespace OpenTK_Riemann_Mating
                         Console.WriteLine("\ttmp: " + tmp);
                         Console.WriteLine("\t\tx[first]: " + x[first]);
                         Console.WriteLine("\t\t\t1 - x[first]: " + (1 - x[first]));
-                        Console.WriteLine("\t\ty[first]: " + x[first]);
+                        Console.WriteLine("\t\ty[first]: " + y[first]);
                         Console.WriteLine("\t\t\t1 - y[first]: " + (1 - y[first]));
                     }
                     */
@@ -220,10 +220,12 @@ namespace OpenTK_Riemann_Mating
                             Console.WriteLine("\t\tz_x[k]: " + z_x[k]);
                             Console.WriteLine("\t\tz_y[k]: " + z_y[k]);
                             Console.WriteLine();
-                            Console.WriteLine("\t\t(x[next] - x[first]): " + (x[next] - x[first]));
-                            Console.WriteLine("\t\t(x[next] - y[first]): " + (x[next] - y[first]));
-                            Console.WriteLine("\t\ttmp * (x[next] - x[first]) / (x[next] - y[first]): " + (tmp * (x[next] - x[first]) / (x[next] - y[first])));
-                            Console.WriteLine("\t\tBigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])): " + BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
+                            Console.WriteLine("\t\t(x[first] / y[next]): " + (x[first] / y[next]));
+                            Console.WriteLine("\t\t(1 - (x[first] / y[next])): " + (1 - (x[first] / y[next])));
+                            Console.WriteLine("\t\t(y[first] / y[next]): " + (y[first] / y[next]));
+                            Console.WriteLine("\t\t(1 - (y[first] / y[next])): " + (1 - (y[first] / y[next])));
+                            Console.WriteLine("\t\ttmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next])): " + (tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
+                            Console.WriteLine("\t\tBigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])): " + BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
                         }
                         */
                         if ((-z_x[k] - x[prev]).RadiusSquared < (z_x[k] - x[prev]).RadiusSquared)
@@ -426,10 +428,10 @@ namespace OpenTK_Riemann_Mating
         BigComplex[] y;
 
         // matingIterations * intermediateSteps
-        OpenTK.Vector2d[] ma;
-        OpenTK.Vector2d[] mb;
-        OpenTK.Vector2d[] mc;
-        OpenTK.Vector2d[] md;
+        Vector2d[] ma;
+        Vector2d[] mb;
+        Vector2d[] mc;
+        Vector2d[] md;
 
         // Once all the frames of the mating have been calculated, the user is free to go back and forth using the arrow keys
         bool completed = false;
@@ -445,10 +447,6 @@ namespace OpenTK_Riemann_Mating
             camera.target = new OpenTK.Vector3(0, 0, 10.1f);
 
             camera.cameraLock = true;
-
-            // start by facing the south pole
-            if (southPole)
-                camera.ArcBallPitch(45, Camera.Type.FREE, false, true);
         }
 
         //@Fix error where, if you move the mouse fast enough, the cursor leaves the screen
