@@ -34,7 +34,7 @@ namespace OpenTK_Riemann_Mating
         BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
         //BigComplex p = new BigComplex(-.835, -.2321);
-        //BigComplex q = new BigComplex(.285, .01);
+        //BigComplex p = new BigComplex(.285, -.01);
 
         //BigComplex p = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
         //BigComplex q = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
@@ -45,14 +45,14 @@ namespace OpenTK_Riemann_Mating
         //BigComplex q = new BigComplex(-1.749292997, -0.000237376);
 
 
-        //BigComplex p = new BigComplex(-1.74957376, -0.000107933);  // comparison between period-1 cardioid and period-3 cardioid near 20,1 (failed near the end)
+        //BigComplex p = new BigComplex(-1.74957376, -0.000107933);  // comparison between period-1 cardioid and period-3 cardioid near their respective 20,1 bulbs
         //BigComplex q = new BigComplex(.270970258, -.005048222);
 
         // Mating values
-        int maxIterations = 200;        // Increasing this will increase lag
+        int maxIterations = 100;        // Increasing this will increase lag
         double bailout = 100;           // The higher, the smoother the colors will look
-        int matingIterations = 75;      // Currently cannot exceed 50, or there will be problems with the shader
-        int intermediateSteps = 16;     // Cannot be lower than 1
+        int matingIterations = 50;      // Currently cannot exceed 50, or there will be problems with the shader
+        int intermediateSteps = 25;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
         //float zoom = -4f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)

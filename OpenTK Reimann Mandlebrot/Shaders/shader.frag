@@ -794,13 +794,15 @@ vec3 JuliaMatingLoop(dvec2 z)
     // Decide which hemisphere we're in
     if (length(z) <= 1)
     {
-        color = vec3(.8);    // light gray
+        color = pow(normalize(FragPosModel),vec3(1));
+        color = vec3(sin(color.x + time/11) *.4 + .4, sin(color.y + 2 * time / 13) *.4 + .4, sin(color.z + 3 * time / 17) *.4 + .4);
         c = vec2(p);
         w = vec2(R_t * z);
     }
     else
     {
-        color = vec3(.2);    // dark grey
+        color = pow(1 - normalize(FragPosModel),vec3(1));
+        color = vec3(sin(color.x - time/11) *.4 + .4, sin(color.y - 2 * time / 13) *.4 + .4, sin(color.z - 3 * time / 17) *.4 + .4);
         c = vec2(q);
         
         if (abs(z.y) < 1e-7)    // reduces error
@@ -819,8 +821,13 @@ vec3 JuliaMatingLoop(dvec2 z)
     // coloring
     if (iter >= maxIterations)
     {
+
         //color = pow(normalize(FragPosModel), vec3(.9));
-        color = mix(1 - pow(normalize(FragPosModel), vec3(.9)), vec3(sin(1 * time / 11), sin(2 * time / 13), sin(3 * time / 17)), color.x);
+        //color = mix(1 - pow(normalize(FragPosModel), vec3(.9)), vec3(sin(1 * time / 11), sin(2 * time / 13), sin(3 * time / 17)), color.x);
+        //color *= vec3(sin(1 * time / 11) * .5 + .5, sin(2 * time / 13) * .5 + .5, sin(3 * time / 17) * .5 + .5);
+
+        vec2 theta = w - (vec2(1,0) - c_sqrt(vec2(1,0) - 4*c)) / 2;
+        color *= (atan(theta.y, theta.x) + PI) / (2 * PI);
     }
     else
     {
