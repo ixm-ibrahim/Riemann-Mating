@@ -66,9 +66,9 @@ namespace OpenTK_Riemann_Mating
 
         // Mating values
         int maxIterations = 300;        // Increasing this may increase lag
-        double bailout = 100;           //@TODO: implement distance estimation coloring
-        int matingIterations = 35;      // Cannot exceed 75
-        int intermediateSteps = 16;     // Cannot be lower than 1
+        double bailout = 4;
+        int matingIterations = 50;      // Cannot exceed 75
+        int intermediateSteps = 25;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
         //float zoom = -5f;   // viewing as if the complex plane is flat, with p mating into q (viewed from the south pole)
@@ -179,10 +179,6 @@ namespace OpenTK_Riemann_Mating
                     completed = true;
 
                 int first = intermediateSteps + s;
-                /*
-                if (n == 1 && s == 11)
-                    Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
-                */
 
                 if (n > 0)
                 {
@@ -191,7 +187,6 @@ namespace OpenTK_Riemann_Mating
 
                     var tmp = (1 - y[first]) / (1 - x[first]);
                     /*
-                    if (n == 1 && s == 11)
                     {
                         Console.WriteLine("\ttmp: " + tmp);
                         Console.WriteLine("\t\tx[first]: " + x[first]);
@@ -206,15 +201,9 @@ namespace OpenTK_Riemann_Mating
                         int next = intermediateSteps * k_next + s;
                         int prev = intermediateSteps * k + ((s + intermediateSteps - 1) % intermediateSteps);
 
-                        if (n == 1 && s == 11 && k == 1)
-                        {
-                            int test = 0;
-                        }
-
                         z_x[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
                         z_y[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
                         /*
-                        if (n == 1 && s == 11)
                         {
                             Console.WriteLine("\tk: " + k);
                             Console.WriteLine("\t\tz_x[k]: " + z_x[k]);

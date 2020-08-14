@@ -748,5 +748,47 @@ namespace UnitTests
             Console.WriteLine(1 - d);
             Console.WriteLine(BigComplex.Sqrt(BigComplex.PositiveInfinity));
         }
+
+        [TestMethod]
+        public void mu()
+        {
+            var c = new Complex(-.123, .745);
+            var bailout = 100;
+            var maxIter = 100;
+
+            double min = double.MaxValue;
+            double max = 0;
+
+            for (double y = -2; y <= 4; y += .01)
+                for (double x = -2; x <= 4; x += .01)
+                {
+                    var z = new Complex(x,y);
+                    int i;
+
+                    for (i = 0; i < 100 && z.RadiusSquared < bailout* bailout; i++)
+                    {
+                        //Console.WriteLine(z);
+                        z = (z ^ 2) + c;
+                    }
+
+
+                    if (i != maxIter)
+                    {
+                        //double mu = i - Math.Log(Math.Log(z.Radius) / Math.Log(bailout)) / Math.Log(2);
+                        double mu = i - Math.Log(Math.Log(z.RadiusSquared, 2), 2) + 4;
+
+                        min = Math.Min(min, mu);
+                        max = Math.Max(max, mu);
+
+                        if (Double.IsNaN(min) || Double.IsNaN(max))
+                        {
+                            int o = 0;
+                        }
+                    }
+                }
+
+            Console.WriteLine(min);
+            Console.WriteLine(max);
+        }
     }
 }

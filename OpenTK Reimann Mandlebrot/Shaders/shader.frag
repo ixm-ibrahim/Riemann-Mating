@@ -1,6 +1,6 @@
 ﻿#version 450 core
 
-#define MAX_FLOAT 3.402823466e+18
+#define MAX_FLOAT 3.402823466e+38
 #define PI 3.1415926535897932384626433832795
 #define MAX_MATING_ITER 76
 
@@ -802,19 +802,38 @@ vec3 JuliaMatingLoop(dvec2 z)
     {
         color = pow(1 - normalize(FragPosModel),vec3(1));
         c = vec2(q);
-        
-        if (abs(z.y) < 1e-7)    // reduces error
-            w = vec2(R_t / z.x, 0);
-        else
-            w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
-            //w = vec2(dcproj(dc_div(dvec2(R_t,0), z)));
+        w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
     }
     
     
     int iter = 0;
-    for (iter = currentMatingIteration + 1; iter < maxIterations && (w.x * w.x + w.y * w.y < bailout); iter++)
-            w = c_2(w) + c;
+    //float mu = exp(-length(w));   // alternative method for smooth coloring
 
+    //@TODO: MAKE SURE DERIVATIVE IS TAKEN IN PULL BACK AS WELL
+    float w2 = w.x * w.x + w.y * w.y;
+    float d2 = 1;
+
+    float maxDist = 1e10;
+
+    for (iter = currentMatingIteration + 1; iter < maxIterations && (w.x * w.x + w.y * w.y < bailout*bailout); iter++)
+    {
+        d2 *= 4.0 * w2;
+        
+        w = c_2(w) + c;
+
+        w2 = w.x * w.x + w.y * w.y;
+
+        // Distance checker
+        if(w2 > maxDist)
+            break;
+
+        //mu += exp(-length(w));
+    }
+    
+    float fineness = 2;
+    float d = sqrt(w2 / d2) * log(w2);
+    //float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
+    float dist = clamp(d, 0, 1);
     
     // coloring
     color = vec3(sin(color.x - time/11) *.4 + .4, sin(color.y - 2 * time / 13) *.4 + .4, sin(color.z - 3 * time / 17) *.4 + .4);
@@ -829,27 +848,58 @@ vec3 JuliaMatingLoop(dvec2 z)
     else
     {
         int newIter = iter;
-        for (newIter = iter; newIter < (iter + 3) && (w.x * w.x + w.y * w.y < bailout); newIter++)
-            w = c_2(w) + c;
         
-        float mu;
+        for (newIter = iter; newIter < (iter + 3) && (w.x * w.x + w.y * w.y < bailout); newIter++)
+        {
+            w = c_2(w) + c;
+            //w = c_2(w) + newC;
 
-        if (isinf(length(w)))
-            mu = iter + 1 - log2(log2(MAX_FLOAT));
-        else
-            mu = iter + 1 - log2(log2(length(w)));
+            if(w2 > maxDist)
+                break;
+        }
+        
+        float mu = iter - log2(log2(dot(w,w))) + 4;
 
-        float t = time * 5;
-        vec3 muColor;
-        muColor = vec3(sin(7 * (mu+t/2) / 17) * .5 + .5, sin(11 * (mu+t/3) / 29) * .5 + .5, sin(13 * (mu+t/5) / 41) * .5 + .5);
         /*
+        // This works as intended (p flows into q). But how can I get this same effect with smooth coloring?
+
+        int tmp = (iter + maxIterations) / 2;
         if (c == vec2(p))
-            muColor = vec3(sin(7 * (mu+t/2) / 17) * .25 + .25, sin(11 * (mu+t/3) / 29) * .25 + .25, sin(13 * (mu+t/5) / 41) * .25 + .25);
+            iter += maxIterations;
+            //iter = tmp;
         else
-            muColor = vec3(sin(7 * (mu+t/2) / 17) * .25 + .75, sin(11 * (mu+t/3) / 29) * .25 + .75, sin(13 * (mu+t/5) / 41) * .25 + .75);
+            iter = maxIterations - iter + 2 * (currentMatingIteration + 1);
+            //iter = tmp - iter + (currentMatingIteration + 1);
+
+        mu = iter;
         */
+        
+        /*
+        // maps coloring so that they flow from p into q
+
+        // WHY DOESN'T THIS WORK???
+
+        float tmp = (mu + maxIterations) / 2;
+        if (c == vec2(p))
+            mu += maxIterations;
+            //mu = tmp;
+        else
+            mu = maxIterations - mu + 2 * (currentMatingIteration + 1);
+            //mu = tmp - mu + (currentMatingIteration + 1);
+        */
+        
+        // Handle infinite length
+        if (isinf(length(w)))
+            mu = iter - log2(log2(MAX_FLOAT)) + 4;
+        
+        
+        
+
+        float t = time * -5;
+        vec3 muColor = vec3(sin(7 * (mu+t/2) / 17) * .5 + .5, sin(11 * (mu+t/3) / 29) * .5 + .5, sin(13 * (mu+t/5) / 41) * .5 + .5);
+
         //color = vec3(1);
-        //color = muColor;
+        //color = dist * muColor;
         color = 1 - muColor;
         //color = (c == vec2(p)) ? muColor : -muColor;
         //color *= muColor;
