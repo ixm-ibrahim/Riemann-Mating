@@ -809,27 +809,6 @@ namespace OpenTK_Riemann_Mating
 		}
 	}
 
-	public class ComplexFix
-	{
-		public Complex c = Complex.Zero;
-		public BigComplex bigC = BigComplex.Zero;
-		public bool big = false;
-
-		public ComplexFix(Complex c, BigComplex bigC, bool big = false)
-		{
-			this.c = c;
-			this.bigC = bigC;
-			this.big = big;
-		}
-
-		public static ComplexFix Zero => new ComplexFix(Complex.Zero, BigComplex.Zero, false);
-
-		public static ComplexFix operator -(ComplexFix z)
-		{
-			return new ComplexFix(-z.c, -z.bigC, z.big);
-		}
-	}
-
 	public struct Quaternion
 	{
 		public double W;

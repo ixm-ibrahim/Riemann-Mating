@@ -30,15 +30,21 @@ namespace OpenTK_Riemann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        BigComplex p = new BigComplex(-1, 0);             // basillica
-        BigComplex q = new BigComplex(-.123, .745);       // rabbit
+        //BigComplex p = new BigComplex(-1, 0);             // basillica
+        //BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
         //BigComplex p = new BigComplex(0, 0);
         //BigComplex p = new BigComplex(-1, 0);
         //BigComplex q = new BigComplex(-1, 0);
 
         //BigComplex p = new BigComplex(-1, 0);             // basilica
-        //BigComplex q = new BigComplex(0, -1);             // dendrite
+        //BigComplex q = new BigComplex(-1, 0);             // basilica
+        BigComplex p = new BigComplex(0, -1);             // dendrite
+        BigComplex q = new BigComplex(0, -1);             // dendrite
+
+        //BigComplex p = new BigComplex(-1, 0);
+        //BigComplex p = new BigComplex(-0.15655, 1.03201);
+        //BigComplex q = new BigComplex(-0.15655, 1.03201);
 
         //BigComplex p = new BigComplex(-.835, -.2321);
         //BigComplex q = new BigComplex(-.835, -.2321);
@@ -64,10 +70,13 @@ namespace OpenTK_Riemann_Mating
         //BigComplex p = new BigComplex(-0.7, .4);
         //BigComplex q = new BigComplex(-0.7, .4);
 
+        //BigComplex p = new BigComplex(Math.PI / 4, 0);
+        //BigComplex q = new BigComplex(Math.PI / 4, 0);
+
         // Mating values
         int maxIterations = 300;        // Increasing this may increase lag
         double bailout = 4;
-        int matingIterations = 50;      // Cannot exceed 75
+        int matingIterations = 25;      // Cannot exceed 75
         int intermediateSteps = 25;     // Cannot be lower than 1
 
         // The higher, the more zoomed in on the Riemann Sphere
@@ -187,6 +196,7 @@ namespace OpenTK_Riemann_Mating
 
                     var tmp = (1 - y[first]) / (1 - x[first]);
                     /*
+                    if (n == 2 && s == 0)
                     {
                         Console.WriteLine("\ttmp: " + tmp);
                         Console.WriteLine("\t\tx[first]: " + x[first]);
@@ -201,20 +211,32 @@ namespace OpenTK_Riemann_Mating
                         int next = intermediateSteps * k_next + s;
                         int prev = intermediateSteps * k + ((s + intermediateSteps - 1) % intermediateSteps);
 
+                        if (n == 1 && s == 0 && k == 1)
+                        {
+                            int br = 0;
+                        }
+
                         z_x[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
                         z_y[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
                         /*
-                        {
+                        if (n == 2 && s == 0)
+                        //if (n == 1 && s == 0 && k == 1)
+                            {
                             Console.WriteLine("\tk: " + k);
                             Console.WriteLine("\t\tz_x[k]: " + z_x[k]);
-                            Console.WriteLine("\t\tz_y[k]: " + z_y[k]);
+                            Console.WriteLine("\t\t\t(x[next] - x[first]): " + (x[next] - x[first]));
+                            Console.WriteLine("\t\t\t(x[next] - y[first]): " + (x[next] - y[first]));
+                            Console.WriteLine("\t\t\t(x[next] - x[first]) / (x[next] - y[first]): " + ((x[next] - x[first]) / (x[next] - y[first])));
+                            Console.WriteLine("\t\t\ttmp * (x[next] - x[first]) / (x[next] - y[first]): " + (tmp * (x[next] - x[first]) / (x[next] - y[first])));
+                            Console.WriteLine("\t\t\tBigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])): " + BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
                             Console.WriteLine();
-                            Console.WriteLine("\t\t(x[first] / y[next]): " + (x[first] / y[next]));
-                            Console.WriteLine("\t\t(1 - (x[first] / y[next])): " + (1 - (x[first] / y[next])));
-                            Console.WriteLine("\t\t(y[first] / y[next]): " + (y[first] / y[next]));
-                            Console.WriteLine("\t\t(1 - (y[first] / y[next])): " + (1 - (y[first] / y[next])));
-                            Console.WriteLine("\t\ttmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next])): " + (tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
-                            Console.WriteLine("\t\tBigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])): " + BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
+                            Console.WriteLine("\t\tz_y[k]: " + z_y[k]);
+                            Console.WriteLine("\t\t\t(x[first] / y[next]): " + (x[first] / y[next]));
+                            Console.WriteLine("\t\t\t(1 - (x[first] / y[next])): " + (1 - (x[first] / y[next])));
+                            Console.WriteLine("\t\t\t(y[first] / y[next]): " + (y[first] / y[next]));
+                            Console.WriteLine("\t\t\t(1 - (y[first] / y[next])): " + (1 - (y[first] / y[next])));
+                            Console.WriteLine("\t\t\ttmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next])): " + (tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
+                            Console.WriteLine("\t\t\tBigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))): " + BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
                         }
                         */
                         if ((-z_x[k] - x[prev]).RadiusSquared < (z_x[k] - x[prev]).RadiusSquared)
@@ -230,6 +252,12 @@ namespace OpenTK_Riemann_Mating
                     }
                 }
 
+                // breakpoint
+                if (n == 2 && s == 0)
+                {
+
+                }
+
                 var d = y[first] - 1;
                 var c = 1 - x[first];
                 var b = x[first] * d;
@@ -240,7 +268,7 @@ namespace OpenTK_Riemann_Mating
                 mc[(int)frame] = new Vector2d(c.R.ToDouble(), c.I.ToDouble());
                 md[(int)frame] = new Vector2d(d.R.ToDouble(), d.I.ToDouble());
 
-                if (frame > 0)
+                if (frame > 0 /*&& n == 2 && s == 0*/)
                 {/*
                     Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
                     Console.WriteLine("\tma: " + ma[(int)frame]);

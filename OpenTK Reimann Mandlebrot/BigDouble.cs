@@ -6,28 +6,30 @@ using System.Threading.Tasks;
 
 namespace OpenTK_Riemann_Mating
 {
+
 	public class BigDouble
 	{
-		double digits;
+		sbyte leadingDigit;
+		double decimalDigits;
 		int exponent;
 
 		public BigDouble(double n)
 		{
 			var d = FromDouble(n);
 
-			digits = d.Digits;
+			decimalDigits = d.Digits;
 			exponent = d.exponent;
 		}
 		public BigDouble(double n, int e)
 		{
-			digits = n;
+			decimalDigits = n;
 			exponent = e;
 
 			Simplify();
 		}
 
 
-		public double Digits => digits;
+		public double Digits => decimalDigits;
 		public int Exponent => exponent;
 
 
@@ -41,6 +43,7 @@ namespace OpenTK_Riemann_Mating
 		public override string ToString()
 		{
 			return (Exponent > 308) ? Digits + " x10^ " + Exponent : ToDouble().ToString();
+			//return (Exponent > 308) ? Digits + " x10^ " + Exponent : String.Format("{0:F80}", ToDouble());
 		}
 		public override bool Equals(object obj)
 		{
@@ -54,11 +57,11 @@ namespace OpenTK_Riemann_Mating
 
 		public int ToInt()
 		{
-			return (int)(digits * Math.Pow(10, exponent));
+			return (int)(decimalDigits * Math.Pow(10, exponent));
 		}
 		public double ToDouble()
 		{
-			return digits * Math.Pow(10, exponent);
+			return decimalDigits * Math.Pow(10, exponent);
 		}
 		public BigDouble FromInt(int n)
 		{
@@ -165,16 +168,16 @@ namespace OpenTK_Riemann_Mating
 				return new BigDouble(test).Simplify();
 
 			int diff = a.Exponent - b.Exponent;
-			
+
 			if (diff < -20)
 				return b;
 			if (diff > 20)
 				return a;
 
 			if (diff >= 0)
-				return new BigDouble((a.digits * Math.Pow(10, diff)) + b.digits, b.exponent).Simplify();
+				return new BigDouble((a.decimalDigits * Math.Pow(10, diff)) + b.decimalDigits, b.exponent).Simplify();
 
-			return new BigDouble(a.digits + (b.digits * Math.Pow(10, -diff)), a.exponent).Simplify();
+			return new BigDouble(a.decimalDigits + (b.decimalDigits * Math.Pow(10, -diff)), a.exponent).Simplify();
 		}
 
 		public static BigDouble operator -(BigDouble a)
@@ -225,12 +228,12 @@ namespace OpenTK_Riemann_Mating
 			return new BigDouble(Math.Pow(a.Digits, b), a.Exponent * b).Simplify();
 		}
 		//@TODO: Fix potential overflow here, with the second pow method
-        public static BigDouble operator ^(double a, BigDouble b)
-        {
-            return new BigDouble(Math.Pow(a, b.Digits) * Math.Pow(a, Math.Pow(10, b.Exponent))).Simplify();
-        }
+		public static BigDouble operator ^(double a, BigDouble b)
+		{
+			return new BigDouble(Math.Pow(a, b.Digits) * Math.Pow(a, Math.Pow(10, b.Exponent))).Simplify();
+		}
 		//@TODO: Figure out how to take the power of a decimal (need to always have an integer exponent for standard scientific notation)
-        /*
+		/*
         public static BigDouble operator ^(BigDouble a, BigDouble b)
         {
             return (a ^ b.Digits) * (a ^ (int) Math.Pow(10, b.Exponent)).Simplify();
@@ -254,7 +257,7 @@ namespace OpenTK_Riemann_Mating
 		}
 		static int GetLeadingZeroNum(double n)
 		{
-			if (n == 0 || Math.Abs(n) > 1)
+			if (n == 0 || Math.Abs(n) >= 1)
 				return 0;
 
 			int count = 0;
@@ -275,7 +278,7 @@ namespace OpenTK_Riemann_Mating
 			{
 				int n = GetLeadingZeroNum(Digits);
 
-				digits *= Math.Pow(10, n);
+				decimalDigits *= Math.Pow(10, n);
 				exponent -= n;
 			}
 			else
@@ -284,7 +287,7 @@ namespace OpenTK_Riemann_Mating
 
 				if (n > 1)
 				{
-					digits /= Math.Pow(10, n - 1);
+					decimalDigits /= Math.Pow(10, n - 1);
 					exponent += n - 1;
 				}
 			}
@@ -347,6 +350,351 @@ namespace OpenTK_Riemann_Mating
 			return new BigDouble(Math.Sqrt(d.Digits), d.Exponent / 2);
 		}
 	}
+	
+	/*
+	public class BigDouble
+	{
+		sbyte leadingDigit;
+		double decimalDigits;
+		int exponent;
+
+		public BigDouble(double n)
+		{
+			var d = FromDouble(n);
+
+			decimalDigits = d.Digits;
+			exponent = d.exponent;
+		}
+		public BigDouble(double n, int e)
+		{
+			decimalDigits = n;
+			exponent = e;
+
+			Simplify();
+		}
+
+
+		public double Digits => decimalDigits;
+		public int Exponent => exponent;
+
+
+		public static BigDouble Zero => new BigDouble(0, 0);
+		public static BigDouble One => new BigDouble(1, 0);
+		public static BigDouble NaN => new BigDouble(double.NaN, 0);
+		public static BigDouble PositiveInfinity => new BigDouble(double.PositiveInfinity, 0);
+		public static BigDouble NegativeInfinity => new BigDouble(double.NegativeInfinity, 0);
+
+
+		public override string ToString()
+		{
+			return (Exponent > 308) ? Digits + " x10^ " + Exponent : ToDouble().ToString();
+		}
+		public override bool Equals(object obj)
+		{
+			return this == (BigDouble)obj;
+		}
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+
+
+		public int ToInt()
+		{
+			return (int)(decimalDigits * Math.Pow(10, exponent));
+		}
+		public double ToDouble()
+		{
+			return decimalDigits * Math.Pow(10, exponent);
+		}
+		public BigDouble FromInt(int n)
+		{
+			if (n == 0)
+				return BigDouble.Zero;
+
+			int e = GetExponent(n);
+
+			return new BigDouble(n / Math.Pow(10, e), e);
+		}
+		public BigDouble FromDouble(double n)
+		{
+			if (n == 0)
+				return BigDouble.Zero;
+			if (n == Double.NaN)
+				return BigDouble.NaN;
+			if (n == Double.PositiveInfinity)
+				return BigDouble.PositiveInfinity;
+			if (n == Double.NegativeInfinity)
+				return BigDouble.NegativeInfinity;
+
+			int e = GetExponent(n);
+
+			return new BigDouble(n / Math.Pow(10, e), e);
+		}
+
+
+		public static explicit operator float(BigDouble a)
+		{
+			return (float)a.ToDouble();
+		}
+		public static explicit operator double(BigDouble a)
+		{
+			return a.ToDouble();
+		}
+
+
+		public static bool operator ==(BigDouble a, double b)
+		{
+			return a.ToDouble() == b;
+		}
+		public static bool operator ==(double a, BigDouble b)
+		{
+			return b.ToDouble() == a;
+		}
+		public static bool operator ==(BigDouble a, BigDouble b)
+		{
+			return a.Digits == b.Digits && a.Exponent == b.Exponent;
+		}
+
+		public static bool operator !=(BigDouble a, double b)
+		{
+			return !(a == b);
+		}
+		public static bool operator !=(double a, BigDouble b)
+		{
+			return !(a == b);
+		}
+		public static bool operator !=(BigDouble a, BigDouble b)
+		{
+			return !(a == b);
+		}
+
+		public static bool operator <(BigDouble a, double b)
+		{
+			return a.ToDouble() < b;
+		}
+		public static bool operator <(double a, BigDouble b)
+		{
+			return a < b.ToDouble();
+		}
+		public static bool operator <(BigDouble a, BigDouble b)
+		{
+			return a.Exponent < b.Exponent || (a.Exponent == b.Exponent && a.Digits < b.Digits);
+		}
+
+		public static bool operator >(BigDouble a, double b)
+		{
+			return a.ToDouble() > b;
+		}
+		public static bool operator >(double a, BigDouble b)
+		{
+			return a > b.ToDouble();
+		}
+		public static bool operator >(BigDouble a, BigDouble b)
+		{
+			return a.Exponent > b.Exponent || (a.Exponent == b.Exponent && a.Digits > b.Digits);
+		}
+
+
+		public static BigDouble operator +(BigDouble a, double b)
+		{
+			return a + new BigDouble(b);
+		}
+		public static BigDouble operator +(double a, BigDouble b)
+		{
+			return b + new BigDouble(a);
+		}
+		public static BigDouble operator +(BigDouble a, BigDouble b)
+		{
+			double test = a.ToDouble() + b.ToDouble();
+
+			if (!Double.IsNaN(test) && !Double.IsInfinity(test))
+				return new BigDouble(test).Simplify();
+
+			int diff = a.Exponent - b.Exponent;
+
+			if (diff < -20)
+				return b;
+			if (diff > 20)
+				return a;
+
+			if (diff >= 0)
+				return new BigDouble((a.decimalDigits * Math.Pow(10, diff)) + b.decimalDigits, b.exponent).Simplify();
+
+			return new BigDouble(a.decimalDigits + (b.decimalDigits * Math.Pow(10, -diff)), a.exponent).Simplify();
+		}
+
+		public static BigDouble operator -(BigDouble a)
+		{
+			return new BigDouble(-a.Digits, a.Exponent);
+		}
+		public static BigDouble operator -(BigDouble a, double b)
+		{
+			return a + new BigDouble(-b);
+		}
+		public static BigDouble operator -(double a, BigDouble b)
+		{
+			return -b + new BigDouble(a);
+		}
+		public static BigDouble operator -(BigDouble a, BigDouble b)
+		{
+			return a + -b;
+		}
+
+		public static BigDouble operator *(BigDouble a, double b)
+		{
+			return new BigDouble(a.Digits * b, a.Exponent).Simplify();
+		}
+		public static BigDouble operator *(double a, BigDouble b)
+		{
+			return new BigDouble(a * b.Digits, b.Exponent).Simplify();
+		}
+		public static BigDouble operator *(BigDouble a, BigDouble b)
+		{
+			return new BigDouble(a.Digits * b.Digits, a.Exponent + b.Exponent).Simplify();
+		}
+
+		public static BigDouble operator /(BigDouble a, double b)
+		{
+			return new BigDouble(a.Digits / b, a.Exponent).Simplify();
+		}
+		public static BigDouble operator /(double a, BigDouble b)
+		{
+			return new BigDouble(a / b.Digits, -b.Exponent).Simplify();
+		}
+		public static BigDouble operator /(BigDouble a, BigDouble b)
+		{
+			return new BigDouble(a.Digits / b.Digits, a.Exponent - b.Exponent).Simplify();
+		}
+
+		public static BigDouble operator ^(BigDouble a, int b)
+		{
+			return new BigDouble(Math.Pow(a.Digits, b), a.Exponent * b).Simplify();
+		}
+		//@TODO: Fix potential overflow here, with the second pow method
+		public static BigDouble operator ^(double a, BigDouble b)
+		{
+			return new BigDouble(Math.Pow(a, b.Digits) * Math.Pow(a, Math.Pow(10, b.Exponent))).Simplify();
+		}
+		//@TODO: Figure out how to take the power of a decimal (need to always have an integer exponent for standard scientific notation)
+		/*
+        public static BigDouble operator ^(BigDouble a, BigDouble b)
+        {
+            return (a ^ b.Digits) * (a ^ (int) Math.Pow(10, b.Exponent)).Simplify();
+        }*
+
+		static int GetExponent(double n)
+		{
+			if (n == 0)
+				return 0;
+			else if (Math.Abs(n) < 1)
+				return GetLeadingZeroNum(n);
+
+			return GetDigitNum(n) - 1;
+		}
+		static int GetDigitNum(double n)
+		{
+			if (n == 0)
+				return 1;
+
+			return (int)Math.Floor(Math.Log10(Math.Abs(n)) + 1);
+		}
+		static int GetLeadingZeroNum(double n)
+		{
+			if (n == 0 || Math.Abs(n) >= 1)
+				return 0;
+
+			int count = 0;
+
+			while (Math.Abs(n) < 1)
+			{
+				n *= 10;
+				count++;
+			}
+
+			return count;
+		}
+		public BigDouble Simplify()
+		{
+			if (Digits == 0)
+				exponent = 0;
+			else if (Math.Abs(Digits) < 1)
+			{
+				int n = GetLeadingZeroNum(Digits);
+
+				decimalDigits *= Math.Pow(10, n);
+				exponent -= n;
+			}
+			else
+			{
+				int n = GetDigitNum(Digits);
+
+				if (n > 1)
+				{
+					decimalDigits /= Math.Pow(10, n - 1);
+					exponent += n - 1;
+				}
+			}
+
+			return this;
+		}
+
+
+		public static bool IsZero(BigDouble d)
+		{
+			return d.Digits == 0;
+		}
+
+		public static bool IsNaN(BigDouble d)
+		{
+			return Double.IsNaN(d.Digits);
+		}
+
+		public static bool IsInfinity(BigDouble d)
+		{
+			return IsPositiveInfinity(d) || IsNegativeInfinity(d);
+		}
+
+		public static bool IsPositiveInfinity(BigDouble d)
+		{
+			return Double.IsPositiveInfinity(d.Digits);
+		}
+
+		public static bool IsNegativeInfinity(BigDouble d)
+		{
+			return Double.IsNegativeInfinity(d.Digits);
+		}
+
+
+		public int Sign()
+		{
+			if (Digits > 0)
+				return 1;
+			else if (Digits < 0)
+				return -1;
+
+			return 0;
+		}
+
+		public static BigDouble Abs(BigDouble d)
+		{
+			return new BigDouble(Math.Abs(d.Digits), d.Exponent);
+		}
+
+		public static BigDouble Invert(BigDouble d)
+		{
+			return 1 / d;
+		}
+
+		public static BigDouble Sqrt(BigDouble d)
+		{
+			if (Math.Abs(d.Exponent) % 2 == 1)
+				return new BigDouble(Math.Sqrt(d.Digits * 10), (d.Exponent - 1) / 2);
+
+			return new BigDouble(Math.Sqrt(d.Digits), d.Exponent / 2);
+		}
+	}
+	*/
 
 	public struct BigComplex
 	{
@@ -721,6 +1069,14 @@ namespace OpenTK_Riemann_Mating
 
 			if (test == 0)
 				return new BigComplex(Complex.Sqrt(c.ToComplex()));
+
+			if (BigDouble.Abs(c.R) > r && c.R < 0)
+				return .5 * Math.Sqrt(2) * new BigComplex(BigDouble.Zero, c.I.Sign() * BigDouble.Sqrt(r - c.R));
+
+			if (r - c.R < 0)
+			{
+
+			}
 
 			return .5 * Math.Sqrt(2) * new BigComplex(BigDouble.Sqrt(r + c.R), c.I.Sign() * BigDouble.Sqrt(r - c.R));
 

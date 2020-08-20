@@ -747,6 +747,32 @@ namespace UnitTests
             Console.WriteLine(d);
             Console.WriteLine(1 - d);
             Console.WriteLine(BigComplex.Sqrt(BigComplex.PositiveInfinity));
+
+            /*
+             *  tmp: (0, -5.30461769748892E+19i)
+                    x[first]: (0, -1.88514999011781E-20i)
+                        1 - x[first]: (1, 1.88514999011781E-20i)
+                    y[first]: (0, 5.30461769748892E+19i)
+                        1 - y[first]: (1, -5.30461769748892E+19i)
+                 k: 1
+                    z_x[k]: (NaN, -1.37300764386722E-10i)
+                        (x[next] - x[first]): (-1.88514999011781E-20, 0i)
+                        (x[next] - y[first]): (-1.88514999011781E-20, -5.30461769748892E+19i)
+                        (x[next] - x[first]) / (x[next] - y[first]): (1.26294268129907E-79, -3.55379048524118E-40i)
+                        tmp * (x[next] - x[first]) / (x[next] - y[first]): (-1.88514999011781E-20, -6.69942809813317E-60i)
+                        BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])): (-1.88514999011781E-20, -6.69942809813317E-60i)
+             * 
+             */
+
+            var e = new BigComplex(-0.0000000000000000000188514999011781, -0.00000000000000000000000000000000000000000000000000000000000669942809813317);
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(e);
+            Console.WriteLine(BigComplex.Sqrt(e));
+
+            //var tmp = new BigComplex(0, -5.30461769748892E+19);
         }
 
         [TestMethod]
