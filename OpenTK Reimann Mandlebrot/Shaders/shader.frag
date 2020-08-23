@@ -694,7 +694,7 @@ dvec2 dc_sqrt(dvec2 c)
     return .5 * sqrt(2) * dvec2(sqrt(r + c.x), sign(c.y) * a * sqrt(r - c.x));
 }
 
-dvec2 dcproj(dvec2 c)
+dvec2 dc_proj(dvec2 c)
 {
     if (!isinf(c.x) && !isinf(c.y) && !isnan(c.x) && !isnan(c.y))
         return c;
@@ -775,6 +775,7 @@ vec3 ColorFromHSV(vec3 color)
     return vec3(v, p, q);
 }
 
+//@TODO: use floats instead to speed up pull-back calculation, and only use doubles if the precision limit is reached
 vec3 JuliaMatingLoop(dvec2 z)
 {
     // julia
@@ -790,15 +791,15 @@ vec3 JuliaMatingLoop(dvec2 z)
     for (int k = currentMatingIteration; k >= 0; --k)
     {
         deriv = 2 * dc_mult(z, deriv);
-        z = dcproj(dc_2(z));
+        z = dc_proj(dc_2(z));
 
         dvec2 cz_d = dc_mult(mc[k], z) + md[k];
 
         // derivative of mobius transformation
-        deriv = dc_div(dc_mult(ma[k],md[k]) - dc_mult(mb[k],mc[k]), dc_2(cz_d));
-        z = dcproj(dc_div(dc_mult(ma[k], z) + mb[k], cz_d));
+        deriv = dc_mult(dc_div(dc_mult(ma[k],md[k]) - dc_mult(mb[k],mc[k]), dc_2(cz_d)), deriv);
+        z = dc_proj(dc_div(dc_mult(ma[k], z) + mb[k], cz_d));
 
-        //z = dcproj(dc_div(dc_mult(ma[k], z) + mb[k], dc_mult(mc[k], z) + md[k]));
+        //z = dc_proj(dc_div(dc_mult(ma[k], z) + mb[k], dc_mult(mc[k], z) + md[k]));
     }
 
     // Decide which hemisphere we're in
@@ -807,12 +808,24 @@ vec3 JuliaMatingLoop(dvec2 z)
         color = pow(normalize(FragPosModel),vec3(1));
         c = vec2(p);
         w = vec2(R_t * z);
+        deriv *= R_t;
     }
     else
     {
         color = pow(1 - normalize(FragPosModel),vec3(1));
         c = vec2(q);
         w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
+
+        // (- a * b.dz) / (b.z * b.z)
+        deriv = dc_proj(
+                    dc_div(
+                        -dc_mult(dvec2(R_t,0), deriv),
+                        dc_2(z * z)
+                    )
+                );
+        //deriv = dc_proj(dc_div(-dc_proj(dc_mult(dvec2(R_t,0), deriv)), dc_proj(dc_2(z * z))));
+        //deriv = cproj(vec2(dc_div(dvec2(R_t,0), deriv)));
+        //deriv = R_t / deriv;
     }
     
     
@@ -821,8 +834,8 @@ vec3 JuliaMatingLoop(dvec2 z)
 
     float w2 = w.x * w.x + w.y * w.y;
     //float d2 = 1;
-    float d2 = 4 * float(deriv.x*deriv.x + deriv.y*deriv.y);
-    //float d2 = float(length(deriv));
+    //float d2 = 4 * float(deriv.x*deriv.x + deriv.y*deriv.y);
+    float d2 = float(length(deriv));
     //float d2 = 2 * length(w) * length(deriv);
 
     float maxDist = 1e10;
@@ -842,8 +855,7 @@ vec3 JuliaMatingLoop(dvec2 z)
         //mu += exp(-length(w));
     }
     
-    float fineness = 7;
-    //float fineness = 15;
+    float fineness = 15;
     float d = sqrt(w2 / d2) * log(w2);
     float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
     //float dist = clamp(sqrt(d * pow(fineness * (float(iter) / maxIterations), 2)), 0, 1);
