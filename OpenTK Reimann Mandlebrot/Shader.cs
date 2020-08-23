@@ -275,6 +275,19 @@ namespace OpenTK_Riemann_Mating
 
             GL.UseProgram(Handle);
 
+            /*
+            for (int i = 0; i < data.Length; i++)
+            {
+                double[] d = new double[]
+                {
+                    data[i].X,
+                    data[i].Y,
+                };
+
+                GL.Uniform2(uniformLocations[name + i], 2, d);
+            }
+            */
+
             for (int i = 0; i < data.Length; i++)
             {
                 GL.Uniform2(uniformLocations[name + i], new Vector2((float)data[i].X, (float)data[i].Y));

@@ -830,10 +830,12 @@ vec3 JuliaMatingLoop(dvec2 z)
         //mu += exp(-length(w));
     }
     
-    float fineness = 2;
+    //float fineness = 7;
+    float fineness = 15;
     float d = sqrt(w2 / d2) * log(w2);
-    //float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
-    float dist = clamp(d, 0, 1);
+    float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
+    //float dist = clamp(sqrt(d * pow(fineness * (float(iter) / maxIterations), 2)), 0, 1);
+    //float dist = clamp(d, 0, 1);
     
     // coloring
     color = vec3(sin(color.x - time/11) *.4 + .4, sin(color.y - 2 * time / 13) *.4 + .4, sin(color.z - 3 * time / 17) *.4 + .4);
@@ -899,8 +901,8 @@ vec3 JuliaMatingLoop(dvec2 z)
         vec3 muColor = vec3(sin(7 * (mu+t/2) / 17) * .5 + .5, sin(11 * (mu+t/3) / 29) * .5 + .5, sin(13 * (mu+t/5) / 41) * .5 + .5);
 
         //color = vec3(1);
-        //color = dist * muColor;
-        color = 1 - muColor;
+        color = dist * muColor;
+        //color = 1 - muColor;
         //color = (c == vec2(p)) ? muColor : -muColor;
         //color *= muColor;
     }

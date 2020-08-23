@@ -30,32 +30,39 @@ namespace OpenTK_Riemann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        //BigComplex p = new BigComplex(-1, 0);             // basillica
-        //BigComplex q = new BigComplex(-.123, .745);       // rabbit
+        BigComplex p = new BigComplex(-1, 0);             // basilica
+        BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
-        //BigComplex p = new BigComplex(0, 0);
+        //BigComplex q = new BigComplex(-1, 0);             // basilica
+        //BigComplex p = new BigComplex(0, -1);             // dendrite
+
+        // ERROR: having p as the denrite and q and literally anything else (except another dendrite, interestingly)
         //BigComplex p = new BigComplex(-1, 0);
         //BigComplex q = new BigComplex(-1, 0);
 
-        //BigComplex p = new BigComplex(-1, 0);             // basilica
-        //BigComplex q = new BigComplex(-1, 0);             // basilica
-        BigComplex p = new BigComplex(0, -1);             // dendrite
-        BigComplex q = new BigComplex(0, -1);             // dendrite
+        // ERROR: still have to handle infinity getting sent to the shader
+        //BigComplex p = new BigComplex(-.123, .745);
+        //BigComplex q = new BigComplex(0, 0);
 
-        //BigComplex p = new BigComplex(-1, 0);
-        //BigComplex p = new BigComplex(-0.15655, 1.03201);
-        //BigComplex q = new BigComplex(-0.15655, 1.03201);
+        //BigComplex p = new BigComplex(-1, 0);               // basilica
+        //BigComplex q = new BigComplex(-0.15655, -1.03201);  // kokopelli
+
+        //BigComplex p = new BigComplex(-0.15655, -1.03201);  // kokopelli
+        //BigComplex q = new BigComplex(0, -1);               // dendrite
 
         //BigComplex p = new BigComplex(-.835, -.2321);
-        //BigComplex q = new BigComplex(-.835, -.2321);
-        //BigComplex p = new BigComplex(.285, -.01);
         //BigComplex q = new BigComplex(.285, -.01);
 
         //BigComplex p = new BigComplex(-.835046398, -.231926809);  // coordinates close to the previous values near misiurewicz point
-        //BigComplex q = new BigComplex(-.835046398, -.231926809);  // precision error near the end when these two are used
+        //BigComplex q = new BigComplex(.284884537, -.011121822);
+
         //BigComplex p = new BigComplex(.284884537, -.011121822);
         //BigComplex q = new BigComplex(.284884537, -.011121822);
 
+        //BigComplex p = new BigComplex(-.835046398, -.231926809);
+        //BigComplex q = new BigComplex(-.835046398, -.231926809);
+
+        // ERROR: limited double precision
         //BigComplex p = new BigComplex(-1.770032905, -0.004054695);    // same two points as the previous, but on the period-3 cardioid (completely failed...)
         //BigComplex q = new BigComplex(-1.749292997, -0.000237376);
 
@@ -63,10 +70,11 @@ namespace OpenTK_Riemann_Mating
         //BigComplex q = new BigComplex(.270970258, -.005048222);
 
         //BigComplex p = new BigComplex(.28, .008);
-        //BigComplex q = new BigComplex(-.4, -.59);
+        //BigComplex q = new BigComplex(-.4, -.59)
 
-        //BigComplex p = new BigComplex(-0.774672447, -0.137429293);  // comparison between period-1 cardioid and period-3 cardioid near their respective 20,1 bulbs
-        //BigComplex p = new BigComplex(-0.776592847, -0.136640848);  // comparison between period-1 cardioid and period-3 cardioid near their respective 20,1 bulbs
+        //BigComplex p = new BigComplex(.28, .008);
+        //BigComplex q = new BigComplex(.284884537, -.011121822);
+
         //BigComplex p = new BigComplex(-0.7, .4);
         //BigComplex q = new BigComplex(-0.7, .4);
 
@@ -133,6 +141,11 @@ namespace OpenTK_Riemann_Mating
             {
                 int s = i % intermediateSteps;
 
+                if (i == 15)
+                {
+
+                }
+
                 x[i] = p_i / R[s];
                 y[i] = R[s] / q_i;
 
@@ -196,7 +209,7 @@ namespace OpenTK_Riemann_Mating
 
                     var tmp = (1 - y[first]) / (1 - x[first]);
                     /*
-                    if (n == 2 && s == 0)
+                    if (n == 1 && s == 1)
                     {
                         Console.WriteLine("\ttmp: " + tmp);
                         Console.WriteLine("\t\tx[first]: " + x[first]);
@@ -211,17 +224,22 @@ namespace OpenTK_Riemann_Mating
                         int next = intermediateSteps * k_next + s;
                         int prev = intermediateSteps * k + ((s + intermediateSteps - 1) % intermediateSteps);
 
+                        // breakpoint
                         if (n == 1 && s == 0 && k == 1)
                         {
-                            int br = 0;
+                            
                         }
 
                         z_x[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first])));
                         z_y[k] = BigComplex.Sqrt(BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next]))));
+
+                        //z_x[k] = BigComplex.Proj(BigComplex.Sqrt(BigComplex.Proj(tmp * (x[next] - x[first]) / (x[next] - y[first]))));
+                        //z_y[k] = BigComplex.Proj(BigComplex.Sqrt(BigComplex.Proj(tmp * (1 - (x[first] / y[next])) / (1 - (y[first] / y[next])))));
+
                         /*
-                        if (n == 2 && s == 0)
-                        //if (n == 1 && s == 0 && k == 1)
-                            {
+                        //if (n == 1 && s == 1)
+                        if (n == 1 && s == 0 && k == 1)
+                        {
                             Console.WriteLine("\tk: " + k);
                             Console.WriteLine("\t\tz_x[k]: " + z_x[k]);
                             Console.WriteLine("\t\t\t(x[next] - x[first]): " + (x[next] - x[first]));
@@ -253,22 +271,34 @@ namespace OpenTK_Riemann_Mating
                 }
 
                 // breakpoint
-                if (n == 2 && s == 0)
+                if (n == 1 && s == 1)
                 {
 
                 }
 
-                var d = y[first] - 1;
-                var c = 1 - x[first];
-                var b = x[first] * d;
-                var a = y[first] * c;
+                var x_ = x[first];
+                var y_ = y[first];
+
+                /*
+                if (x_.R == double.PositiveInfinity)
+                    //x_.R = new BigDouble(double.MaxValue);
+                    x_.R = new BigDouble(1e99);
+                if (y_.R == double.PositiveInfinity)
+                    //y_.R = new BigDouble(double.MaxValue);
+                    y_.R = new BigDouble(1e99);
+                */
+
+                var d = y_ - 1;
+                var c = 1 - x_;
+                var b = x_ * d;
+                var a = y_ * c;
 
                 ma[(int)frame] = new Vector2d(a.R.ToDouble(), a.I.ToDouble());
                 mb[(int)frame] = new Vector2d(b.R.ToDouble(), b.I.ToDouble());
                 mc[(int)frame] = new Vector2d(c.R.ToDouble(), c.I.ToDouble());
                 md[(int)frame] = new Vector2d(d.R.ToDouble(), d.I.ToDouble());
 
-                if (frame > 0 /*&& n == 2 && s == 0*/)
+                if (frame > 0 /*&& n == 1 && s == 1*/)
                 {/*
                     Console.WriteLine("\n" + frame + ": " + n + " -> " + s);
                     Console.WriteLine("\tma: " + ma[(int)frame]);
@@ -373,14 +403,20 @@ namespace OpenTK_Riemann_Mating
                 mb_frame[k] = mb[intermediateSteps * k + s];
                 mc_frame[k] = mc[intermediateSteps * k + s];
                 md_frame[k] = md[intermediateSteps * k + s];
+                /*
+                shader.SetVector2d("ma" + k, ma[intermediateSteps * k + s]);
+                shader.SetVector2d("mb" + k, mb[intermediateSteps * k + s]);
+                shader.SetVector2d("mc" + k, mc[intermediateSteps * k + s]);
+                shader.SetVector2d("md" + k, md[intermediateSteps * k + s]);
+                */
             }
 
-
+            /**/
             shader.SetVector2dArray("ma", ma_frame);
             shader.SetVector2dArray("mb", mb_frame);
             shader.SetVector2dArray("mc", mc_frame);
             shader.SetVector2dArray("md", md_frame);
-
+            
 
 
 

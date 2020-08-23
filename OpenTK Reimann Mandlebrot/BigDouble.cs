@@ -1061,8 +1061,11 @@ namespace OpenTK_Riemann_Mating
 			if (IsNaN(c) || IsInfinity(c))
 				return new BigComplex(double.PositiveInfinity, 0);
 
-			if (c.I == 0)
-				return new BigComplex(BigDouble.Sqrt(c.R), BigDouble.Zero);
+			if (c.I == 0 && c.R > 0)/*
+				if (c.R < 0 && c.R.Exponent < 0)
+					return BigComplex.Zero;
+				else*/
+					return new BigComplex(BigDouble.Sqrt(c.R), BigDouble.Zero);
 
 			BigDouble r = c.Radius;
 			double test = c.ToComplex().Radius - c.R.ToDouble();
@@ -1073,15 +1076,7 @@ namespace OpenTK_Riemann_Mating
 			if (BigDouble.Abs(c.R) > r && c.R < 0)
 				return .5 * Math.Sqrt(2) * new BigComplex(BigDouble.Zero, c.I.Sign() * BigDouble.Sqrt(r - c.R));
 
-			if (r - c.R < 0)
-			{
-
-			}
-
 			return .5 * Math.Sqrt(2) * new BigComplex(BigDouble.Sqrt(r + c.R), c.I.Sign() * BigDouble.Sqrt(r - c.R));
-
-
-			//return .5 * Math.Sqrt(2) * new BigComplex(BigDouble.Sqrt(r + c.R), (test == 0) ? BigDouble.Zero : c.I.Sign() * BigDouble.Sqrt(r - c.R));
 		}
 
 		public static BigComplex Proj(BigComplex z)
