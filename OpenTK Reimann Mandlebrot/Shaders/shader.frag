@@ -784,11 +784,21 @@ vec3 JuliaMatingLoop(dvec2 z)
     // output color
     vec3 color;
     
+    dvec2 deriv = dvec2(1,0);
+
     // orbit push forward
     for (int k = currentMatingIteration; k >= 0; --k)
     {
+        deriv = 2 * dc_mult(z, deriv);
         z = dcproj(dc_2(z));
-        z = dcproj(dc_div(dc_mult(ma[k], z) + mb[k], dc_mult(mc[k], z) + md[k]));
+
+        dvec2 cz_d = dc_mult(mc[k], z) + md[k];
+
+        // derivative of mobius transformation
+        deriv = dc_div(dc_mult(ma[k],md[k]) - dc_mult(mb[k],mc[k]), dc_2(cz_d));
+        z = dcproj(dc_div(dc_mult(ma[k], z) + mb[k], cz_d));
+
+        //z = dcproj(dc_div(dc_mult(ma[k], z) + mb[k], dc_mult(mc[k], z) + md[k]));
     }
 
     // Decide which hemisphere we're in
@@ -809,9 +819,11 @@ vec3 JuliaMatingLoop(dvec2 z)
     int iter = 0;
     //float mu = exp(-length(w));   // alternative method for smooth coloring
 
-    //@TODO: MAKE SURE DERIVATIVE IS TAKEN IN PULL BACK AS WELL
     float w2 = w.x * w.x + w.y * w.y;
-    float d2 = 1;
+    //float d2 = 1;
+    float d2 = 4 * float(deriv.x*deriv.x + deriv.y*deriv.y);
+    //float d2 = float(length(deriv));
+    //float d2 = 2 * length(w) * length(deriv);
 
     float maxDist = 1e10;
 
@@ -830,8 +842,8 @@ vec3 JuliaMatingLoop(dvec2 z)
         //mu += exp(-length(w));
     }
     
-    //float fineness = 7;
-    float fineness = 15;
+    float fineness = 7;
+    //float fineness = 15;
     float d = sqrt(w2 / d2) * log(w2);
     float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
     //float dist = clamp(sqrt(d * pow(fineness * (float(iter) / maxIterations), 2)), 0, 1);

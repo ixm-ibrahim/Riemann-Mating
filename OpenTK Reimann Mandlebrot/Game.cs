@@ -30,8 +30,8 @@ namespace OpenTK_Riemann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        BigComplex p = new BigComplex(-1, 0);             // basilica
-        BigComplex q = new BigComplex(-.123, .745);       // rabbit
+        //BigComplex p = new BigComplex(-1, 0);             // basilica
+        //BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
         //BigComplex q = new BigComplex(-1, 0);             // basilica
         //BigComplex p = new BigComplex(0, -1);             // dendrite
@@ -72,8 +72,8 @@ namespace OpenTK_Riemann_Mating
         //BigComplex p = new BigComplex(.28, .008);
         //BigComplex q = new BigComplex(-.4, -.59)
 
-        //BigComplex p = new BigComplex(.28, .008);
-        //BigComplex q = new BigComplex(.284884537, -.011121822);
+        BigComplex p = new BigComplex(.28, .008);
+        BigComplex q = new BigComplex(.284884537, -.011121822);
 
         //BigComplex p = new BigComplex(-0.7, .4);
         //BigComplex q = new BigComplex(-0.7, .4);
@@ -376,6 +376,14 @@ namespace OpenTK_Riemann_Mating
             //      for each s
             int s = (int)frame % intermediateSteps;
             int n = ((int)frame - s) / intermediateSteps;
+           
+            // workaround for the last-n error
+            if (n == matingIterations - 1)
+            {
+                n = matingIterations - 2;
+                s = intermediateSteps - 1;
+            }
+
 
             // Comment this out to remove console updatess
             Console.WriteLine("frame: " + (int)frame + " / " + (matingIterations*intermediateSteps) + "\n\tn: " + n + "\n\ts: " + s + "\n");
