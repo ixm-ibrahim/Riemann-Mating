@@ -870,7 +870,10 @@ namespace OpenTK_Riemann_Mating
 			return z * d;
 		}
 		public static BigComplex operator *(BigComplex z, BigComplex d)
-		{
+		{/*
+			if ((z.R == BigDouble.PositiveInfinity && d.R == BigDouble.Zero) || (d.R == BigDouble.PositiveInfinity && z.R == BigDouble.Zero))
+				return BigComplex.Zero;
+				*/
 			return new BigComplex((z.R * d.R) - (z.I * d.I), (z.R * d.I) + (d.R * z.I));
 		}
 

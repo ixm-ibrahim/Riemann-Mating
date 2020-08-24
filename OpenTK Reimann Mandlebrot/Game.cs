@@ -30,17 +30,17 @@ namespace OpenTK_Riemann_Mating
         // CHANGEABLE VALUES
 
         // Julia Sets to mate
-        //BigComplex p = new BigComplex(-1, 0);             // basilica
-        //BigComplex q = new BigComplex(-.123, .745);       // rabbit
+        BigComplex p = new BigComplex(-1, 0);             // basilica
+        BigComplex q = new BigComplex(-.123, .745);       // rabbit
 
-        //BigComplex q = new BigComplex(-1, 0);             // basilica
         //BigComplex p = new BigComplex(0, -1);             // dendrite
+        //BigComplex q = new BigComplex(-1, 0);             // basilica
 
-        // ERROR: having p as the denrite and q and literally anything else (except another dendrite, interestingly)
+        // ERROR: having p as the denrite and q and literally anything else (except a basilica or another dendrite, interestingly)
         //BigComplex p = new BigComplex(-1, 0);
         //BigComplex q = new BigComplex(-1, 0);
 
-        // ERROR: still have to handle infinity getting sent to the shader
+        // ERROR: setting q to 0 doesn't work - still have to handle infinity getting sent to the shader
         //BigComplex p = new BigComplex(-.123, .745);
         //BigComplex q = new BigComplex(0, 0);
 
@@ -72,8 +72,11 @@ namespace OpenTK_Riemann_Mating
         //BigComplex p = new BigComplex(.28, .008);
         //BigComplex q = new BigComplex(-.4, -.59)
 
-        BigComplex p = new BigComplex(.28, .008);
-        BigComplex q = new BigComplex(.284884537, -.011121822);
+        //BigComplex p = new BigComplex(.28, .008);
+        //BigComplex q = new BigComplex(.284884537, -.011121822);
+
+        //BigComplex p = new BigComplex(-.835, -.2321);
+        //BigComplex q = new BigComplex(-.835046398, -.231926809);
 
         //BigComplex p = new BigComplex(-0.7, .4);
         //BigComplex q = new BigComplex(-0.7, .4);
@@ -207,7 +210,7 @@ namespace OpenTK_Riemann_Mating
                     var z_x = new BigComplex[matingIterations - n];
                     var z_y = new BigComplex[matingIterations - n];
 
-                    var tmp = (1 - y[first]) / (1 - x[first]);
+                    var tmp = BigComplex.Proj((1 - y[first]) / (1 - x[first]));
                     /*
                     if (n == 1 && s == 1)
                     {

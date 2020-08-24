@@ -815,17 +815,7 @@ vec3 JuliaMatingLoop(dvec2 z)
         color = pow(1 - normalize(FragPosModel),vec3(1));
         c = vec2(q);
         w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
-
-        // (- a * b.dz) / (b.z * b.z)
-        deriv = dc_proj(
-                    dc_div(
-                        -dc_mult(dvec2(R_t,0), deriv),
-                        dc_2(z * z)
-                    )
-                );
-        //deriv = dc_proj(dc_div(-dc_proj(dc_mult(dvec2(R_t,0), deriv)), dc_proj(dc_2(z * z))));
-        //deriv = cproj(vec2(dc_div(dvec2(R_t,0), deriv)));
-        //deriv = R_t / deriv;
+        deriv = dc_proj(dc_div(-dc_mult(dvec2(R_t,0), deriv), dc_2(z)));
     }
     
     
@@ -855,7 +845,7 @@ vec3 JuliaMatingLoop(dvec2 z)
         //mu += exp(-length(w));
     }
     
-    float fineness = 15;
+    float fineness = 25;
     float d = sqrt(w2 / d2) * log(w2);
     float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
     //float dist = clamp(sqrt(d * pow(fineness * (float(iter) / maxIterations), 2)), 0, 1);
