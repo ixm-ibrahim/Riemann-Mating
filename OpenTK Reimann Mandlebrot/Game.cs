@@ -70,9 +70,10 @@ namespace OpenTK_Riemann_Mating
         //BigComplex q = new BigComplex(.270970258, -.005048222);
 
         //BigComplex p = new BigComplex(.28, .008);
-        //BigComplex q = new BigComplex(-.4, -.59)
+        //BigComplex q = new BigComplex(-.4, -.59);
 
         //BigComplex p = new BigComplex(.28, .008);
+        //BigComplex q = new BigComplex(.28, .008);
         //BigComplex q = new BigComplex(.284884537, -.011121822);
 
         //BigComplex p = new BigComplex(-.835, -.2321);

@@ -776,7 +776,7 @@ vec3 ColorFromHSV(vec3 color)
 }
 
 //@TODO: use floats instead to speed up pull-back calculation, and only use doubles if the precision limit is reached
-vec3 JuliaMatingLoop(dvec2 z)
+vec3 JuliaMatingLoop(dvec2 z, float riemannAdjustment)
 {
     // julia
     vec2 c;
@@ -816,6 +816,7 @@ vec3 JuliaMatingLoop(dvec2 z)
         c = vec2(q);
         w = cproj(vec2(dc_div(dvec2(R_t,0), z)));
         deriv = dc_proj(dc_div(-dc_mult(dvec2(R_t,0), deriv), dc_2(z)));
+        riemannAdjustment = 1 / riemannAdjustment;
     }
     
     
@@ -847,7 +848,8 @@ vec3 JuliaMatingLoop(dvec2 z)
     
     float fineness = 25;
     float d = sqrt(w2 / d2) * log(w2);
-    float dist = clamp(sqrt(d * pow(fineness, 2)), 0, 1);
+    float dist = clamp(d * pow(fineness, 2), 0, 1);
+    //float dist = clamp(d * pow(fineness, 2) / riemannAdjustment, 0, 1);
     //float dist = clamp(sqrt(d * pow(fineness * (float(iter) / maxIterations), 2)), 0, 1);
     //float dist = clamp(d, 0, 1);
     
@@ -935,5 +937,5 @@ vec3 Riemann()
     
     dvec2 z = vec2(r + rPos, i + iPos);
 
-    return JuliaMatingLoop(z);
+    return JuliaMatingLoop(z, float(tmp));
 }
